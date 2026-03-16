@@ -1,22 +1,28 @@
 package com.tpo.ecommerce.controller;
 
 import com.tpo.ecommerce.dto.UsuarioDTO;
+import com.tpo.ecommerce.entity.Usuario;
 import com.tpo.ecommerce.enums.UserRol;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.tpo.ecommerce.service.UsuarioService;
 
 import java.util.List;
 
-
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/usuarios")
 //luego agregar cross (cuando este el front)
+@AllArgsConstructor
 public class UsuarioController {
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
 
     @GetMapping("/get")
     public ResponseEntity<List<UsuarioDTO>> getUsuarios(
@@ -29,5 +35,15 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.getUsuarios(id,userRol,nombre,mail,apellido));
     }
 
+    @PostMapping
+    public ResponseEntity<UsuarioDTO> createUsuario(@RequestBody UsuarioDTO usuario) {
+        return ResponseEntity.ok(usuarioService.createUsuario(usuario));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteUsuario(@RequestParam Long id) {
+        usuarioService.deleteUsuario(id);
+        return ResponseEntity.noContent().build();
+    }
 
 }
