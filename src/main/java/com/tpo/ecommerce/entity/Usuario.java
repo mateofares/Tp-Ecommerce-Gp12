@@ -1,6 +1,6 @@
-package entity;
+package com.tpo.ecommerce.entity;
 
-import enums.UserRol;
+import com.tpo.ecommerce.enums.UserRol;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +16,7 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Enumerated(EnumType.STRING)
     private UserRol userRol;
     private String nombre;
     private String mail;
