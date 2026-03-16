@@ -32,8 +32,22 @@ public class UsuarioService implements IUsuarioService{
 
         return usuarios.stream().map(usuario -> mapperUsuario.toDto(usuario)).toList();
     }
+
+    @Override
+    public UsuarioDTO createUsuario(UsuarioDTO usuario) {
+        return mapperUsuario.toDto(usuarioRepository.save(
+                new Usuario(
+                    usuario.getApellido(),
+                        usuario.getContrasenia(),
+                        usuario.getMail(),
+                        usuario.getNombre(),
+                        usuario.getUserRol()
+                )));
+    }
+
+    @Override
+    public void deleteUsuario(Long id) {
+        usuarioRepository.deleteById(id);
+    }
 }
-
-
-
 
