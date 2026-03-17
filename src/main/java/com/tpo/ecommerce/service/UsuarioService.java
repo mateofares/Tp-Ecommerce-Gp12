@@ -20,15 +20,15 @@ public class UsuarioService implements IUsuarioService{
     public List<UsuarioDTO> getUsuarios(Long id,UserRol userRol, String nombre, String mail, String apellido) {
         List<Usuario> usuarios = usuarioRepository.findAll();
 
-        usuarios = usuarios.stream().filter(usuario -> usuario.getId().equals(id)).toList();
+        if(id != null) usuarios = usuarios.stream().filter(usuario -> usuario.getId().equals(id)).toList();
 
-        usuarios = usuarios.stream().filter(usuario -> usuario.getUserRol()==userRol).toList();
+        if (userRol != null )usuarios = usuarios.stream().filter(usuario -> usuario.getUserRol() == userRol).toList();
 
-        usuarios = usuarios.stream().filter(usuario -> usuario.getNombre().equals(nombre)).toList();
+        if (nombre != null) usuarios = usuarios.stream().filter(usuario -> usuario.getNombre().equalsIgnoreCase(nombre)).toList();
 
-        usuarios = usuarios.stream().filter(usuario -> usuario.getMail().equals(mail)).toList();
+        if (mail != null) usuarios = usuarios.stream().filter(usuario -> usuario.getMail().equalsIgnoreCase(mail)).toList();
 
-        usuarios = usuarios.stream().filter(usuario -> usuario.getApellido().equals(apellido)).toList();
+        if (apellido != null) usuarios = usuarios.stream().filter(usuario -> usuario.getApellido().equalsIgnoreCase(apellido)).toList();
 
         return usuarios.stream().map(usuario -> mapperUsuario.toDto(usuario)).toList();
     }
