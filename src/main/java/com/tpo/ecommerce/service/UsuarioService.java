@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.tpo.ecommerce.repository.UsuarioRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -49,5 +50,28 @@ public class UsuarioService implements IUsuarioService{
     public void deleteUsuario(Long id) {
         usuarioRepository.deleteById(id);
     }
+
+    public UsuarioDTO updateUsuario(Long id,UserRol userRol, String nombre, String mail, String apellido,String contrasenia){
+        if (usuarioRepository.existsById(id)){
+            Usuario usuario = usuarioRepository.findById(id).get();
+            if (userRol != null )usuario.setUserRol(userRol);
+
+            if (nombre != null) usuario.setNombre(nombre);
+
+            if (mail != null) usuario.setMail(mail);
+
+            if (apellido != null) usuario.setApellido(apellido);
+
+            if (contrasenia != null) usuario.setContrasenia(contrasenia);
+
+            return  mapperUsuario.toDto(usuario);
+
+        }else {
+            throw new RuntimeException("Usuario no encontrado por id");
+        }
+
+
+    }
+
 }
 
