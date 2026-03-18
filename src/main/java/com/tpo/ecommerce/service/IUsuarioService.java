@@ -11,5 +11,6 @@ public interface IUsuarioService {
     public List<UsuarioDTO> getUsuarios(Long id,UserRol userRol,String nombre,String mail,String apellido);
     public UsuarioDTO createUsuario(UsuarioDTO usuario);
     public void deleteUsuario(Long id);
+    public UsuarioDTO updateUsuario(Long id,UserRol userRol,String nombre,String mail,String apellido,String contrasenia);
 
 }

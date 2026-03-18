@@ -5,14 +5,7 @@ import com.tpo.ecommerce.entity.Usuario;
 import com.tpo.ecommerce.enums.UserRol;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.tpo.ecommerce.service.UsuarioService;
 
 import java.util.List;
@@ -44,6 +37,19 @@ public class UsuarioController {
     public ResponseEntity<Void> deleteUsuario(@RequestParam Long id) {
         usuarioService.deleteUsuario(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping
+    public ResponseEntity<UsuarioDTO> updateUsuario(
+            @RequestParam Long id,
+            @RequestParam(required = false) UserRol userRol,
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) String mail,
+            @RequestParam(required = false) String apellido,
+            @RequestParam(required = false) String contrasenia
+
+    ){
+        return ResponseEntity.ok(usuarioService.updateUsuario(id,userRol,nombre,mail,apellido,contrasenia));
     }
 
 }
