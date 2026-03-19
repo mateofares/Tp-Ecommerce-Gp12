@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import com.tpo.ecommerce.repository.UsuarioRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -64,7 +63,7 @@ public class UsuarioService implements IUsuarioService{
 
             if (contrasenia != null) usuario.setContrasenia(contrasenia);
 
-            return  mapperUsuario.toDto(usuario);
+            return mapperUsuario.toDto(usuarioRepository.save(usuario));
 
         }else {
             throw new RuntimeException("Usuario no encontrado por id");

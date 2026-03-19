@@ -17,7 +17,7 @@ import java.util.List;
 public class UsuarioController {
     private final UsuarioService usuarioService;
 
-    @GetMapping("/get")
+    @GetMapping
     public ResponseEntity<List<UsuarioDTO>> getUsuarios(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) UserRol userRol,
@@ -39,17 +39,21 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping
+    @PatchMapping("/{id}")
     public ResponseEntity<UsuarioDTO> updateUsuario(
-            @RequestParam Long id,
-            @RequestParam(required = false) UserRol userRol,
-            @RequestParam(required = false) String nombre,
-            @RequestParam(required = false) String mail,
-            @RequestParam(required = false) String apellido,
-            @RequestParam(required = false) String contrasenia
-
+            @PathVariable Long id,
+            @RequestBody UsuarioDTO usuario
     ){
-        return ResponseEntity.ok(usuarioService.updateUsuario(id,userRol,nombre,mail,apellido,contrasenia));
+        return ResponseEntity.ok(
+                usuarioService.updateUsuario(
+                        id,
+                        usuario.getUserRol(),
+                        usuario.getNombre(),
+                        usuario.getMail(),
+                        usuario.getApellido(),
+                        usuario.getContrasenia()
+                )
+        );
     }
 
 }
