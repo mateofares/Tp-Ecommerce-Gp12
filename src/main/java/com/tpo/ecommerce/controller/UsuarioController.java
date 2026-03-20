@@ -1,7 +1,7 @@
 package com.tpo.ecommerce.controller;
 
+import com.tpo.ecommerce.dto.LoginRequestDTO;
 import com.tpo.ecommerce.dto.UsuarioDTO;
-import com.tpo.ecommerce.entity.Usuario;
 import com.tpo.ecommerce.enums.UserRol;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +54,16 @@ public class UsuarioController {
                         usuario.getContrasenia()
                 )
         );
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<UsuarioDTO> register(@RequestBody UsuarioDTO usuario) {
+        return ResponseEntity.ok(usuarioService.register(usuario));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UsuarioDTO> login(@RequestBody LoginRequestDTO loginRequest) {
+        return ResponseEntity.ok(usuarioService.login(loginRequest));
     }
 
 }

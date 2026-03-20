@@ -1,11 +1,15 @@
 package com.tpo.ecommerce.service;
 
+import com.tpo.ecommerce.dto.LoginRequestDTO;
 import com.tpo.ecommerce.dto.UsuarioDTO;
 import com.tpo.ecommerce.entity.Usuario;
 import com.tpo.ecommerce.enums.UserRol;
 import lombok.AllArgsConstructor;
 import com.tpo.ecommerce.mapper.MapperUsuario;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.server.ResponseStatusException;
 import com.tpo.ecommerce.repository.UsuarioRepository;
 
 import java.util.List;
@@ -35,14 +39,40 @@ public class UsuarioService implements IUsuarioService{
 
     @Override
     public UsuarioDTO createUsuario(UsuarioDTO usuario) {
+        validarData(
+                usuario.getNombre(),
+                usuario.getMail(),
+                usuario.getContrasenia(),
+                usuario.getApellido()
+        );
+
+        mailDisponible(usuario.getMail(), null);
+
         return mapperUsuario.toDto(usuarioRepository.save(
                 new Usuario(
-                    usuario.getApellido(),
+                        usuario.getApellido().trim(),
                         usuario.getContrasenia(),
                         usuario.getMail(),
-                        usuario.getNombre(),
+                        usuario.getNombre().trim(),
                         usuario.getUserRol()
                 )));
+    }
+
+    @Override
+    public UsuarioDTO register(UsuarioDTO usuario) {
+        return createUsuario(usuario);
+    }
+
+    @Override
+    public UsuarioDTO login(LoginRequestDTO loginRequest) {
+        Usuario usuario = usuarioRepository.findByMail(loginRequest.getMail())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (!usuario.getContrasenia().equals(loginRequest.getContrasenia())) {
+            throw new RuntimeException("Contrasenia incorrecta");
+        }
+
+        return mapperUsuario.toDto(usuario);
     }
 
     @Override
@@ -57,7 +87,7 @@ public class UsuarioService implements IUsuarioService{
 
             if (nombre != null) usuario.setNombre(nombre);
 
-            if (mail != null) usuario.setMail(mail);
+            if (mail != null) {usuario.setMail(mail);}
 
             if (apellido != null) usuario.setApellido(apellido);
 
@@ -72,5 +102,20 @@ public class UsuarioService implements IUsuarioService{
 
     }
 
-}
+    private void validarData(String nombre, String mail, String contrasenia, String apellido) {
 
+        if (!StringUtils.hasText(nombre) || !StringUtils.hasText(mail)
+                || !StringUtils.hasText(contrasenia) || !StringUtils.hasText(apellido)) {
+            throw new RuntimeException("Todos los campos son obligatorios");
+        }
+    }
+
+    private void mailDisponible(String mail, Long idUsuarioActual) {
+        usuarioRepository.findByMail(mail).ifPresent(usuarioExistente -> {
+            if (idUsuarioActual == null || !usuarioExistente.getId().equals(idUsuarioActual)) {
+                throw new RuntimeException("Ya existe un usuario registrado con ese mail");
+            }
+        });
+    }
+
+}
