@@ -28,11 +28,6 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.getUsuarios(id,userRol,nombre,mail,apellido));
     }
 
-    @PostMapping
-    public ResponseEntity<UsuarioDTO> createUsuario(@RequestBody UsuarioDTO usuario) {
-        return ResponseEntity.ok(usuarioService.createUsuario(usuario));
-    }
-
     @DeleteMapping
     public ResponseEntity<Void> deleteUsuario(@RequestParam Long id) {
         usuarioService.deleteUsuario(id);

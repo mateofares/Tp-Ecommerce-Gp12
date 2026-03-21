@@ -26,7 +26,7 @@ public class UsuarioService implements IUsuarioService{
 
         if(id != null) usuarios = usuarios.stream().filter(usuario -> usuario.getId().equals(id)).toList();
 
-        if (userRol != null )usuarios = usuarios.stream().filter(usuario -> usuario.getUserRol() == userRol).toList();
+        if (userRol != null )usuarios = usuarios.stream().filter(usuario -> usuario.getUserRol().toString().equalsIgnoreCase(userRol.toString())).toList();
 
         if (nombre != null) usuarios = usuarios.stream().filter(usuario -> usuario.getNombre().equalsIgnoreCase(nombre)).toList();
 
@@ -37,8 +37,7 @@ public class UsuarioService implements IUsuarioService{
         return usuarios.stream().map(usuario -> mapperUsuario.toDto(usuario)).toList();
     }
 
-    @Override
-    public UsuarioDTO createUsuario(UsuarioDTO usuario) {
+    private UsuarioDTO createUsuario(UsuarioDTO usuario) {
         validarData(
                 usuario.getNombre(),
                 usuario.getMail(),
@@ -83,6 +82,8 @@ public class UsuarioService implements IUsuarioService{
     public UsuarioDTO updateUsuario(Long id,UserRol userRol, String nombre, String mail, String apellido,String contrasenia){
         if (usuarioRepository.existsById(id)){
             Usuario usuario = usuarioRepository.findById(id).get();
+
+
             if (userRol != null )usuario.setUserRol(userRol);
 
             if (nombre != null) usuario.setNombre(nombre);

@@ -1,24 +1,41 @@
 package com.tpo.ecommerce.mapper;
 
+import com.tpo.ecommerce.dto.ProductoDTO;
 import com.tpo.ecommerce.entity.Producto;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MapperProducto {
 
-    public ProductoDTO toDto(Producto producto){
+    public ProductoDTO toDto(Producto producto) {
+        if (producto == null) return null;
         return new ProductoDTO(
                 producto.getId(),
-                producto.getNombre(),
+                producto.getTitulo(),
                 producto.getDescripcion(),
                 producto.getPrecio(),
-                producto.getStock(),
+                producto.getCategoria(),
+                producto.getMarca(),
                 producto.getTalle(),
                 producto.getColor(),
-                producto.getMarca(),
-                producto.getCategoria(),
-                producto.getVendedor()
+                producto.getEstado(),
+                producto.getImagenUrl()
         );
     }
 
+    public Producto toEntity(ProductoDTO dto) {
+        if (dto == null) return null;
+        return new Producto(
+                dto.getId(),
+                dto.getTitulo(),
+                dto.getDescripcion(),
+                dto.getPrecio(),
+                dto.getCategoria(),
+                dto.getMarca(),
+                dto.getTalle(),
+                dto.getColor(),
+                dto.getEstado(),
+                dto.getImagenUrl()
+        );
+    }
 }

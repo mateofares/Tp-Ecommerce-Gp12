@@ -1,23 +1,87 @@
 package com.tpo.ecommerce.service;
 
+import com.tpo.ecommerce.dto.ProductoDTO;
+import com.tpo.ecommerce.entity.Producto;
+import com.tpo.ecommerce.enums.Categorias;
+import com.tpo.ecommerce.enums.Color;
+import com.tpo.ecommerce.enums.Estado;
+import com.tpo.ecommerce.enums.Marca;
+import com.tpo.ecommerce.enums.Talle;
+import com.tpo.ecommerce.mapper.MapperProducto;
+import com.tpo.ecommerce.repository.ProductoRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import java.util.List;
 
-import com.tpo.ecommerce.dto.ProductoDTO;
+@AllArgsConstructor
+@Service
+public class ProductoService implements IProductoService {
+    private final ProductoRepository productoRepository;
+    private final MapperProducto mapperProducto;
 
-public class ProductoService {
-
-    public ProductoDTO publicar(ProductoDTO dto) {
-        
+    @Override
+    public ProductoDTO crear(ProductoDTO dto) {
+        validarData(dto);
+        Producto producto = mapperProducto.toEntity(dto);
+        return mapperProducto.toDto(productoRepository.save(producto));
     }
 
-    public List<ProductoDTO> listarDisponibles() {
-        
+    @Override
+    public List<ProductoDTO> getProductos(Long id, String titulo, String descripcion, Double precio, Categorias categoria,
+                                          Marca marca, Talle talle, Color color, Estado estado) {
+        List<Producto> productos = productoRepository.findAll();
+
+        if (id != null) productos = productos.stream().filter(p -> p.getId() != null && p.getId().equals(id)).toList();
+        if (StringUtils.hasText(titulo)) {
+            productos = productos.stream().filter(p -> p.getTitulo() != null && p.getTitulo().equalsIgnoreCase(titulo)).toList();
+        }
+        if (StringUtils.hasText(descripcion)) {
+            productos = productos.stream().filter(p -> p.getDescripcion() != null && p.getDescripcion().equalsIgnoreCase(descripcion)).toList();
+        }
+        if (precio != null) {
+            productos = productos.stream().filter(p -> p.getPrecio() != null && p.getPrecio().equals(precio)).toList();
+        }
+        if (categoria != null) productos = productos.stream().filter(p -> categoria.equals(p.getCategoria())).toList();
+        if (marca != null) productos = productos.stream().filter(p -> marca.equals(p.getMarca())).toList();
+        if (talle != null) productos = productos.stream().filter(p -> talle.equals(p.getTalle())).toList();
+        if (color != null) productos = productos.stream().filter(p -> color.equals(p.getColor())).toList();
+        if (estado != null) productos = productos.stream().filter(p -> estado.equals(p.getEstado())).toList();
+
+        return productos.stream().map(mapperProducto::toDto).toList();
     }
 
-    public List<ProductoDTO> listarPorVendedor(Long vendedorId) {
+    @Override
+    public ProductoDTO actualizar(Long id, String titulo, String descripcion, Double precio, Categorias categoria,
+                                  Marca marca, Talle talle, Color color, Estado estado, String imagenUrl) {
+        if (!productoRepository.existsById(id)) {
+            throw new RuntimeException("Producto no encontrado por id");
+        }
+
+        Producto producto = productoRepository.findById(id).get();
+
+        if (StringUtils.hasText(titulo)) producto.setTitulo(titulo);
+        if (StringUtils.hasText(descripcion)) producto.setDescripcion(descripcion);
+        if (precio != null) producto.setPrecio(precio);
+        if (categoria != null) producto.setCategoria(categoria);
+        if (marca != null) producto.setMarca(marca);
+        if (talle != null) producto.setTalle(talle);
+        if (color != null) producto.setColor(color);
+        if (estado != null) producto.setEstado(estado);
+        if (StringUtils.hasText(imagenUrl)) producto.setImagenUrl(imagenUrl);
+
+        return mapperProducto.toDto(productoRepository.save(producto));
     }
 
-    public ProductoDTO actualizar(Long id, ProductoDTO dto) {
+    @Override
+    public void deleteProducto(Long id) {
+        productoRepository.deleteById(id);
     }
 
+    private void validarData(ProductoDTO dto) {
+        if (dto == null || !StringUtils.hasText(dto.getTitulo()) || dto.getPrecio() == null) {
+            throw new RuntimeException("Titulo y precio son obligatorios");
+        }
+    }
 }
