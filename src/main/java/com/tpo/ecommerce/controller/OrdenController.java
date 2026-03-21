@@ -1,12 +1,17 @@
 package com.tpo.ecommerce.controller;
 
+import com.tpo.ecommerce.dto.OrdenDTO;
+import com.tpo.ecommerce.service.OrdenService;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@AllArgsConstructor
 @RestController
 @RequestMapping("/ordenes")
 public class OrdenController {
     
-    @Autowired
     private OrdenService ordenService;
     
     @PostMapping

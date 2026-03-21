@@ -9,7 +9,6 @@ import java.util.List;
 public interface IUsuarioService {
 
     public List<UsuarioDTO> getUsuarios(Long id,UserRol userRol,String nombre,String mail,String apellido);
-    public UsuarioDTO createUsuario(UsuarioDTO usuario);
     public UsuarioDTO register(UsuarioDTO usuario);
     public UsuarioDTO login(LoginRequestDTO loginRequest);
     public void deleteUsuario(Long id);

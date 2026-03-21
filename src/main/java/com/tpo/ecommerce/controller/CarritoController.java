@@ -1,12 +1,16 @@
 package com.tpo.ecommerce.controller;
 
+import com.tpo.ecommerce.dto.CarritoDTO;
+import com.tpo.ecommerce.dto.OrdenDTO;
+import com.tpo.ecommerce.service.CarritoService;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/carrito")
 public class CarritoController {
     
-    @Autowired
     private CarritoService carritoService;
     
     @PostMapping("/agregar")

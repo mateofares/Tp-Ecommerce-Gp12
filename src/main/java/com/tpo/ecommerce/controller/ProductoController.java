@@ -1,36 +1,66 @@
 package com.tpo.ecommerce.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.tpo.ecommerce.dto.ProductoDTO;
+import com.tpo.ecommerce.enums.Categorias;
+import com.tpo.ecommerce.enums.Color;
+import com.tpo.ecommerce.enums.Estado;
+import com.tpo.ecommerce.enums.Marca;
+import com.tpo.ecommerce.enums.Talle;
+import com.tpo.ecommerce.service.ProductoService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/productos")
+@AllArgsConstructor
 public class ProductoController {
-    
-    public ProductoController(ProductoService productoService) {
-        this.productoService = productoService;
-    }
+    private final ProductoService productoService;
 
-    private ProductoService productoService;
-    
     @PostMapping
-    public ProductoDTO publicar(@RequestBody ProductoDTO dto) {
-        return productoService.publicar(dto);
+    public ResponseEntity<ProductoDTO> crear(@RequestBody ProductoDTO dto) {
+        return ResponseEntity.ok(productoService.crear(dto));
     }
     
     @GetMapping
-    public List<ProductoDTO> listarDisponibles() {
-        return productoService.listarDisponibles();
+    public ResponseEntity<List<ProductoDTO>> getProductos(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String titulo,
+            @RequestParam(required = false) String descripcion,
+            @RequestParam(required = false) Double precio,
+            @RequestParam(required = false) Categorias categoria,
+            @RequestParam(required = false) Marca marca,
+            @RequestParam(required = false) Talle talle,
+            @RequestParam(required = false) Color color,
+            @RequestParam(required = false) Estado estado
+    ) {
+        return ResponseEntity.ok(productoService.getProductos(
+                id, titulo, descripcion, precio, categoria, marca, talle, color, estado
+        ));
     }
     
-    @GetMapping("/{vendedorId}")
-    public List<ProductoDTO> listarPorVendedor(@PathVariable Long vendedorId) {
-        return productoService.listarPorVendedor(vendedorId);
+    @DeleteMapping
+    public ResponseEntity<Void> deleteProducto(@RequestParam Long id) {
+        productoService.deleteProducto(id);
+        return ResponseEntity.noContent().build();
     }
     
-    @PutMapping("/{id}")
-    public ProductoDTO actualizar(@PathVariable Long id, @RequestBody ProductoDTO dto) {
-        return productoService.actualizar(id, dto);
+    @PatchMapping("/{id}")
+    public ResponseEntity<ProductoDTO> actualizar(@PathVariable Long id, @RequestBody ProductoDTO dto) {
+        return ResponseEntity.ok(productoService.actualizar(
+                id,
+                dto.getTitulo(),
+                dto.getDescripcion(),
+                dto.getPrecio(),
+                dto.getCategoria(),
+                dto.getMarca(),
+                dto.getTalle(),
+                dto.getColor(),
+                dto.getEstado(),
+                dto.getImagenUrl()
+        ));
     }
     
 }   
