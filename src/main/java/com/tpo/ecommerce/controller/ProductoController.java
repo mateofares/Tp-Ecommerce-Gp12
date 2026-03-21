@@ -27,6 +27,7 @@ public class ProductoController {
     @GetMapping
     public ResponseEntity<List<ProductoDTO>> getProductos(
             @RequestParam(required = false) Long id,
+            @RequestParam(required = false) Long usuarioId,
             @RequestParam(required = false) String titulo,
             @RequestParam(required = false) String descripcion,
             @RequestParam(required = false) Double precio,
@@ -37,7 +38,7 @@ public class ProductoController {
             @RequestParam(required = false) Estado estado
     ) {
         return ResponseEntity.ok(productoService.getProductos(
-                id, titulo, descripcion, precio, categoria, marca, talle, color, estado
+                id, usuarioId, titulo, descripcion, precio, categoria, marca, talle, color, estado
         ));
     }
     

@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "usuario")
 @Getter
@@ -25,6 +27,10 @@ public class Usuario {
     private String mail;
     private String contrasenia;
     private String apellido;
+
+    @OneToMany(mappedBy = "usuario")
+    @ElementCollection
+    private List<Producto> productos;
 
     public Usuario(String apellido, String contrasenia, String mail, String nombre, UserRol userRol) {
         this.apellido = apellido;

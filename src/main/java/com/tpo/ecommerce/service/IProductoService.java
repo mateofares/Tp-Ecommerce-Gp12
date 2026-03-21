@@ -13,8 +13,8 @@ import java.util.List;
 public interface IProductoService {
     ProductoDTO crear(ProductoDTO dto);
 
-    List<ProductoDTO> getProductos(Long id, String titulo, String descripcion, Double precio, Categorias categoria,
-                                   Marca marca, Talle talle, Color color, Estado estado);
+    List<ProductoDTO> getProductos(Long id, Long usuarioId, String titulo, String descripcion, Double precio,
+                                   Categorias categoria, Marca marca, Talle talle, Color color, Estado estado);
 
     ProductoDTO actualizar(Long id, String titulo, String descripcion, Double precio, Categorias categoria,
                            Marca marca, Talle talle, Color color, Estado estado, String imagenUrl);

@@ -42,4 +42,8 @@ public class Producto {
     private Estado estado;
 
     private String imagenUrl;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 }
