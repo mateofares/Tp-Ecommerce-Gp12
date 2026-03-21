@@ -29,9 +29,11 @@ public class ProductoService implements IProductoService {
     }
 
     @Override
-    public List<ProductoDTO> getProductos(Long id, String titulo, String descripcion, Double precio, Categorias categoria,
-                                          Marca marca, Talle talle, Color color, Estado estado) {
-        List<Producto> productos = productoRepository.findAll();
+    public List<ProductoDTO> getProductos(Long id, Long usuarioId, String titulo, String descripcion, Double precio,
+                                          Categorias categoria, Marca marca, Talle talle, Color color, Estado estado) {
+        List<Producto> productos = (usuarioId != null)
+                ? productoRepository.findByUsuarioId(usuarioId)
+                : productoRepository.findAll();
 
         if (id != null) productos = productos.stream().filter(p -> p.getId() != null && p.getId().equals(id)).toList();
         if (StringUtils.hasText(titulo)) {
@@ -80,8 +82,8 @@ public class ProductoService implements IProductoService {
     }
 
     private void validarData(ProductoDTO dto) {
-        if (dto == null || !StringUtils.hasText(dto.getTitulo()) || dto.getPrecio() == null) {
-            throw new RuntimeException("Titulo y precio son obligatorios");
+        if (dto == null || !StringUtils.hasText(dto.getTitulo()) || dto.getPrecio() == null || dto.getUsuarioId() == null) {
+            throw new RuntimeException("Titulo, precio y vendedor son obligatorios");
         }
     }
 }

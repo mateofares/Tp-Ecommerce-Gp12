@@ -16,6 +16,7 @@ import lombok.Setter;
 @Setter
 public class ProductoDTO {
     private Long id;
+    private Long usuarioId;
     private String titulo;
     private String descripcion;
     private Double precio;
