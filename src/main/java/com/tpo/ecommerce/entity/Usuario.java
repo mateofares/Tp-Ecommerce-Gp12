@@ -29,7 +29,6 @@ public class Usuario {
     private String apellido;
 
     @OneToMany(mappedBy = "usuario")
-    @ElementCollection
     private List<Producto> productos;
 
     public Usuario(String apellido, String contrasenia, String mail, String nombre, UserRol userRol) {

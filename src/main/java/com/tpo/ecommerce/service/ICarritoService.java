@@ -4,15 +4,14 @@ import com.tpo.ecommerce.dto.CarritoDTO;
 import com.tpo.ecommerce.dto.OrdenDTO;
 
 public interface ICarritoService {
-    
-    CarritoDTO agregar(Long compradorId, Long productoId, int cantidad);
-    
-    CarritoDTO eliminar(Long carritoId, Long productoId);
-    
-    CarritoDTO vaciar(Long compradorId);
-    
+
+    CarritoDTO agregar(CarritoDTO dto);
+
+    CarritoDTO eliminar(CarritoDTO dto);
+
+    CarritoDTO vaciar(CarritoDTO dto);
+
     CarritoDTO ver(Long compradorId);
-    
-    OrdenDTO comprar(Long compradorId);
-    
+
+    OrdenDTO comprar(CarritoDTO dto);
 }

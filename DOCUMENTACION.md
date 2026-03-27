@@ -36,14 +36,14 @@ Archivo: `src/main/resources/application.properties`
   - `UsuarioDTO`: datos expuestos por la API.
   - `LoginRequestDTO`: request del login.
 - `com.tpo.ecommerce.enums`
-  - `UserRol`: enum con roles `COMPRADOR` y `VENDEDOR`.
+  - `UserRol`: enum con roles `USUARIO` y `ADMINISTRADOR`.
 - `com.tpo.ecommerce.mapper`
   - `MapperUsuario`: convierte entidad `Usuario` a `UsuarioDTO`.
 
 ## 5) Modelo de datos (Entidad)
 Entidad `Usuario` (tabla `usuario`):
 - `id` (Long, PK, autogenerado)
-- `userRol` (Enum: COMPRADOR, VENDEDOR)
+- `userRol` (Enum: USUARIO, ADMINISTRADOR)
 - `nombre` (String)
 - `mail` (String)
 - `contrasenia` (String)
