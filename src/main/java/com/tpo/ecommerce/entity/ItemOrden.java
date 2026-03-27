@@ -6,35 +6,32 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-@Setter
-@Getter
 @Entity
+@Table(name = "item_orden")
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "orden")
-public class Orden {
+public class ItemOrden {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "comprador_id", nullable = false)
-    private Usuario comprador;
+    @JoinColumn(name = "orden_id", nullable = false)
+    private Orden orden;
 
-    @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ItemOrden> items = new ArrayList<>();
-
-    @Column(nullable = false)
-    private LocalDateTime fecha;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "producto_id", nullable = false)
+    private Producto producto;
 
     @Column(nullable = false)
-    private String estado;
+    private String productoTitulo;
 
     @Column(nullable = false)
-    private double total;
+    private Double precioUnitario;
+
+    @Column(nullable = false)
+    private Integer cantidad;
 }

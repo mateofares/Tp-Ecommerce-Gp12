@@ -1,6 +1,5 @@
 package com.tpo.ecommerce.entity;
 
-import com.tpo.ecommerce.dto.ItemCarritoDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,11 +13,15 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "carrito")
 public class Carrito {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-  //  private Usuario comprador;
 
+    @OneToOne(optional = false)
+    @JoinColumn(name = "comprador_id", nullable = false, unique = true)
+    private Usuario comprador;
 
+    @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemCarrito> items = new ArrayList<>();
 }
