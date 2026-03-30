@@ -1,6 +1,7 @@
 package com.tpo.ecommerce.controller;
 
 import com.tpo.ecommerce.dto.OrdenDTO;
+import com.tpo.ecommerce.service.IOrdenService;
 import com.tpo.ecommerce.service.OrdenService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,7 @@ import java.util.List;
 @RequestMapping("/ordenes")
 public class OrdenController {
     
-    private OrdenService ordenService;
+    private IOrdenService ordenService;
     
     @PostMapping
     public OrdenDTO comprar(@RequestBody OrdenDTO dto) {

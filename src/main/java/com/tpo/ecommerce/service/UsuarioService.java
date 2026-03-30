@@ -45,13 +45,14 @@ public class UsuarioService implements IUsuarioService{
                 usuario.getApellido()
         );
 
+        validarMailFormato(usuario.getMail());
         mailDisponible(usuario.getMail(), null);
 
         return mapperUsuario.toDto(usuarioRepository.save(
                 new Usuario(
                         usuario.getApellido().trim(),
                         usuario.getContrasenia(),
-                        usuario.getMail(),
+                        usuario.getMail().trim(),
                         usuario.getNombre().trim(),
                         usuario.getUserRol()
                 )));
@@ -88,7 +89,11 @@ public class UsuarioService implements IUsuarioService{
 
             if (nombre != null) usuario.setNombre(nombre);
 
-            if (mail != null) {usuario.setMail(mail);}
+            if (mail != null) {
+                validarMailFormato(mail);
+                mailDisponible(mail, id);
+                usuario.setMail(mail.trim());
+            }
 
             if (apellido != null) usuario.setApellido(apellido);
 
@@ -108,6 +113,17 @@ public class UsuarioService implements IUsuarioService{
         if (!StringUtils.hasText(nombre) || !StringUtils.hasText(mail)
                 || !StringUtils.hasText(contrasenia) || !StringUtils.hasText(apellido)) {
             throw new RuntimeException("Todos los campos son obligatorios");
+        }
+    }
+
+    private void validarMailFormato(String mail) {
+        if (!StringUtils.hasText(mail)) {
+            throw new RuntimeException("Mail invalido");
+        }
+
+        String mailTrim = mail.trim();
+        if (!mailTrim.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            throw new RuntimeException("Formato de mail invalido");
         }
     }
 

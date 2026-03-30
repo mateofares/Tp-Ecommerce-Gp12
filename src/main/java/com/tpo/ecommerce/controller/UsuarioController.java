@@ -3,6 +3,7 @@ package com.tpo.ecommerce.controller;
 import com.tpo.ecommerce.dto.LoginRequestDTO;
 import com.tpo.ecommerce.dto.UsuarioDTO;
 import com.tpo.ecommerce.enums.UserRol;
+import com.tpo.ecommerce.service.IUsuarioService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +13,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
-//luego agregar cross (cuando este el front)
 @AllArgsConstructor
 public class UsuarioController {
-    private final UsuarioService usuarioService;
+    private final IUsuarioService usuarioService;
 
     @GetMapping
     public ResponseEntity<List<UsuarioDTO>> getUsuarios(
