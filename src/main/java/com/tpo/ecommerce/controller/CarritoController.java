@@ -3,6 +3,7 @@ package com.tpo.ecommerce.controller;
 import com.tpo.ecommerce.dto.CarritoDTO;
 import com.tpo.ecommerce.dto.OrdenDTO;
 import com.tpo.ecommerce.service.CarritoService;
+import com.tpo.ecommerce.service.ICarritoService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/carrito")
 public class CarritoController {
     
-    private CarritoService carritoService;
+    private ICarritoService carritoService;
     
     @PostMapping("/agregar")
     public CarritoDTO agregar(@RequestBody CarritoDTO dto) {

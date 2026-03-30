@@ -6,6 +6,7 @@ import com.tpo.ecommerce.enums.Color;
 import com.tpo.ecommerce.enums.Estado;
 import com.tpo.ecommerce.enums.Marca;
 import com.tpo.ecommerce.enums.Talle;
+import com.tpo.ecommerce.service.IProductoService;
 import com.tpo.ecommerce.service.ProductoService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ import java.util.List;
 @RequestMapping("/productos")
 @AllArgsConstructor
 public class ProductoController {
-    private final ProductoService productoService;
+    private final IProductoService productoService;
 
     @PostMapping
     public ResponseEntity<ProductoDTO> crear(@RequestBody ProductoDTO dto) {

@@ -25,7 +25,7 @@ import java.util.Set;
 
 @Service
 @AllArgsConstructor
-public class OrdenService {
+public class OrdenService implements IOrdenService {
 
     private final OrdenRepository ordenRepository;
     private final UsuarioRepository usuarioRepository;
