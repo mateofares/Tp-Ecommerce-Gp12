@@ -9,5 +9,5 @@ class EcommerceApplicationTests {
 	@Test
 	void contextLoads() {
 	}
- /* prueba de commit 123*/
+/* prueba de commit 123*/
 }
