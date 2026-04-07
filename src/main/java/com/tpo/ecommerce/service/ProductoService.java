@@ -7,6 +7,8 @@ import com.tpo.ecommerce.enums.Color;
 import com.tpo.ecommerce.enums.Estado;
 import com.tpo.ecommerce.enums.Marca;
 import com.tpo.ecommerce.enums.Talle;
+import com.tpo.ecommerce.exceptions.BadRequestException;
+import com.tpo.ecommerce.exceptions.NotFoundException;
 import com.tpo.ecommerce.mapper.MapperProducto;
 import com.tpo.ecommerce.repository.ProductoRepository;
 import lombok.AllArgsConstructor;
@@ -58,7 +60,7 @@ public class ProductoService implements IProductoService {
     public ProductoDTO actualizar(Long id, String titulo, String descripcion, Double precio, Categorias categoria,
                                   Marca marca, Talle talle, Color color, Estado estado, String imagenUrl) {
         if (!productoRepository.existsById(id)) {
-            throw new RuntimeException("Producto no encontrado por id");
+            throw new NotFoundException("Producto no encontrado por id");
         }
 
         Producto producto = productoRepository.findById(id).get();
@@ -83,7 +85,7 @@ public class ProductoService implements IProductoService {
 
     private void validarData(ProductoDTO dto) {
         if (dto == null || !StringUtils.hasText(dto.getTitulo()) || dto.getPrecio() == null || dto.getUsuarioId() == null) {
-            throw new RuntimeException("Titulo, precio y vendedor son obligatorios");
+            throw new BadRequestException("Titulo, precio y vendedor son obligatorios");
         }
     }
 }

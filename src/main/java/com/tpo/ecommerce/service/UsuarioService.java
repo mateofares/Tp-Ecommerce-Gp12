@@ -4,12 +4,14 @@ import com.tpo.ecommerce.dto.LoginRequestDTO;
 import com.tpo.ecommerce.dto.UsuarioDTO;
 import com.tpo.ecommerce.entity.Usuario;
 import com.tpo.ecommerce.enums.UserRol;
+import com.tpo.ecommerce.exceptions.BadRequestException;
+import com.tpo.ecommerce.exceptions.DuplicateResourceException;
+import com.tpo.ecommerce.exceptions.NotFoundException;
+import com.tpo.ecommerce.exceptions.UnauthorizedException;
 import lombok.AllArgsConstructor;
 import com.tpo.ecommerce.mapper.MapperUsuario;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.server.ResponseStatusException;
 import com.tpo.ecommerce.repository.UsuarioRepository;
 
 import java.util.List;
@@ -66,10 +68,10 @@ public class UsuarioService implements IUsuarioService{
     @Override
     public UsuarioDTO login(LoginRequestDTO loginRequest) {
         Usuario usuario = usuarioRepository.findByMail(loginRequest.getMail())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
         if (!usuario.getContrasenia().equals(loginRequest.getContrasenia())) {
-            throw new RuntimeException("Contrasenia incorrecta");
+            throw new UnauthorizedException("Contrasenia incorrecta");
         }
 
         return mapperUsuario.toDto(usuario);
@@ -102,7 +104,7 @@ public class UsuarioService implements IUsuarioService{
             return mapperUsuario.toDto(usuarioRepository.save(usuario));
 
         }else {
-            throw new RuntimeException("Usuario no encontrado por id");
+            throw new NotFoundException("Usuario no encontrado por id");
         }
 
 
@@ -112,25 +114,25 @@ public class UsuarioService implements IUsuarioService{
 
         if (!StringUtils.hasText(nombre) || !StringUtils.hasText(mail)
                 || !StringUtils.hasText(contrasenia) || !StringUtils.hasText(apellido)) {
-            throw new RuntimeException("Todos los campos son obligatorios");
+            throw new BadRequestException("Todos los campos son obligatorios");
         }
     }
 
     private void validarMailFormato(String mail) {
         if (!StringUtils.hasText(mail)) {
-            throw new RuntimeException("Mail invalido");
+            throw new BadRequestException("Mail invalido");
         }
 
         String mailTrim = mail.trim();
         if (!mailTrim.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-            throw new RuntimeException("Formato de mail invalido");
+            throw new BadRequestException("Formato de mail invalido");
         }
     }
 
     private void mailDisponible(String mail, Long idUsuarioActual) {
         usuarioRepository.findByMail(mail).ifPresent(usuarioExistente -> {
             if (idUsuarioActual == null || !usuarioExistente.getId().equals(idUsuarioActual)) {
-                throw new RuntimeException("Ya existe un usuario registrado con ese mail");
+                throw new DuplicateResourceException("Usuario", "mail", mail);
             }
         });
     }

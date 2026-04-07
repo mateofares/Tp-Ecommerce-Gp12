@@ -1,5 +1,6 @@
 package com.tpo.ecommerce.entity;
 
+import com.tpo.ecommerce.enums.EstadoOrden;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,8 +33,9 @@ public class Orden {
     @Column(nullable = false)
     private LocalDateTime fecha;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String estado;
+    private EstadoOrden estado;
 
     @Column(nullable = false)
     private double total;
