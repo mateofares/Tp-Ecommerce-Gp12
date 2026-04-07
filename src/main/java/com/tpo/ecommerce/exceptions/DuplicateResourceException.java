@@ -1,12 +1,14 @@
 package com.tpo.ecommerce.exceptions;
 
-public class DuplicateResourceException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class DuplicateResourceException extends ApiException {
     private final String resource;
     private final String field;
     private final Object value;
 
     public DuplicateResourceException(String resource, String field, Object value) {
-        super(resource + " duplicado: " + field + "=" + value);
+        super(HttpStatus.CONFLICT, resource + " duplicado: " + field + "=" + value);
         this.resource = resource;
         this.field = field;
         this.value = value;
