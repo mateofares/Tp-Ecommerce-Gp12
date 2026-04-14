@@ -31,6 +31,10 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario")
     private List<Producto> productos;
 
+    @OneToMany(mappedBy = "usuario")
+    private List<Direccion> direcciones;
+
+
     public Usuario(String apellido, String contrasenia, String mail, String nombre, UserRol userRol) {
         this.apellido = apellido;
         this.contrasenia = contrasenia;
