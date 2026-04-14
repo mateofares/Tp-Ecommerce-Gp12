@@ -21,26 +21,39 @@ public class Producto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+
+    @Column(name = "titulo")
     private String titulo;
+
+    @Column(name = "descripcion")
     private String descripcion;
+
+    @Column(name = "precio")
     private Double precio;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "categoria")
     private Categorias categoria;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "marca")
     private Marca marca;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "talle")
     private Talle talle;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "color")
     private Color color;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "estado")
     private Estado estado;
 
+    @Column(name = "imagen_url")
     private String imagenUrl;
 
     @ManyToOne

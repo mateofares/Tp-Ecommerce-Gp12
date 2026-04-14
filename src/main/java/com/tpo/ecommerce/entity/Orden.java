@@ -21,6 +21,7 @@ public class Orden {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -30,13 +31,13 @@ public class Orden {
     @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemOrden> items = new ArrayList<>();
 
-    @Column(nullable = false)
+    @Column(name = "fecha")
     private LocalDateTime fecha;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "estado")
     private EstadoOrden estado;
 
-    @Column(nullable = false)
+    @Column(name = "total")
     private double total;
 }

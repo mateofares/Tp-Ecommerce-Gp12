@@ -19,25 +19,26 @@ public class Pago {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "orden_id", nullable = false, unique = true)
     private Orden orden;
 
-    @Column(nullable = false)
+    @Column(name = "metodo")
     private String metodo;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "estado")
     private EstadoPago estado;
 
-    @Column(nullable = false)
+    @Column(name = "monto")
     private Double monto;
 
-    @Column(nullable = false)
+    @Column(name = "referencia_maxima")
     private String referenciaMaxima;
 
-    @Column(nullable = false)
+    @Column(name = "fecha_pago")
     private LocalDateTime fechaPago;
 }

@@ -16,6 +16,7 @@ public class ItemCarrito {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -26,6 +27,6 @@ public class ItemCarrito {
     @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
 
-    @Column(nullable = false)
+    @Column(name = "cantidad")
     private Integer cantidad;
 }
