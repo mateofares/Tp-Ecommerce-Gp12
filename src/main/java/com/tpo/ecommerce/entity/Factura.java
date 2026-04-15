@@ -61,10 +61,7 @@ public class Factura {
 
     @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemFactura> items = new ArrayList<>();
-    public Factura(Orden orden, String numeroFactura, String nombreComprador,
-                   String apellidoComprador, String cuitDni, String numeroOrden,
-                   String detallesItems, Double totalFacturado,
-                   String descripcionImpositiva) {
+    public Factura(Orden orden, String numeroFactura, String nombreComprador, String apellidoComprador, String cuitDni, String numeroOrden, String detallesItems, Double totalFacturado, String descripcionImpositiva) {
         this.orden = orden;
         this.numeroFactura = numeroFactura;
         this.nombreComprador = nombreComprador;

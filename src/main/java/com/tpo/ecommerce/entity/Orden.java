@@ -37,6 +37,9 @@ public class Orden {
     @OneToOne(mappedBy = "orden", fetch = FetchType.LAZY)
     private Factura factura;
 
+    @OneToOne(mappedBy = "orden", fetch = FetchType.LAZY)
+    private Envio envio;
+
     @Column(nullable = false)
     private LocalDateTime fecha;
 
