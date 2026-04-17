@@ -20,12 +20,23 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "user_rol")
     private UserRol userRol;
+
+    @Column(name = "nombre")
     private String nombre;
+
+    @Column(name = "mail")
     private String mail;
+
+    @Column(name = "contrasenia")
     private String contrasenia;
+
+    @Column(name = "apellido")
     private String apellido;
 
     @OneToMany(mappedBy = "usuario")

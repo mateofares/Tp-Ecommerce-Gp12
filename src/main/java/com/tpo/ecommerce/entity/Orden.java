@@ -21,6 +21,7 @@ public class Orden {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne
@@ -44,10 +45,10 @@ public class Orden {
     private LocalDateTime fecha;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "estado")
     private EstadoOrden estado;
 
-    @Column(nullable = false)
+    @Column(name = "total")
     private double total;
 
 
