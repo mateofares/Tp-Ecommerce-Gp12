@@ -2,21 +2,23 @@ package com.tpo.ecommerce.entity;
 
 import com.tpo.ecommerce.enums.UserRol;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Table(name = "usuario")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
-public class Usuario {
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,12 +47,48 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario")
     private List<Direccion> direcciones;
 
-
     public Usuario(String apellido, String contrasenia, String mail, String nombre, UserRol userRol) {
         this.apellido = apellido;
         this.contrasenia = contrasenia;
         this.mail = mail;
         this.nombre = nombre;
         this.userRol = userRol;
+    }
+
+    // ===== UserDetails implementation =====
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + userRol.name()));
+    }
+
+    @Override
+    public String getPassword() {
+        return contrasenia;
+    }
+
+    @Override
+    public String getUsername() {
+        return mail;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
