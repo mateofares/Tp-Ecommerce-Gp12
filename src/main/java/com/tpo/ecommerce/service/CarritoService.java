@@ -41,6 +41,7 @@ public class CarritoService implements ICarritoService {
     private final MapperCarrito mapperCarrito;
     private final MapperOrden mapperOrden;
     private final IPagoService pagoService;
+    private final IDescuentoService descuentoService;
 
     @Override
     @Transactional
@@ -227,5 +228,38 @@ public class CarritoService implements ICarritoService {
                 throw new DuplicateResourceException("Producto", "id", productoId);
             }
         }
+    }
+
+    /**
+     * Aplica un descuento a un carrito
+     * @param compradorId ID del comprador
+     * @param descuentoId ID del descuento
+     * @return Carrito actualizado con descuento aplicado
+     */
+    @Transactional
+    public CarritoDTO aplicarDescuentoAlCarrito(Long compradorId, Long descuentoId) {
+        Carrito carrito = obtenerOCrearCarrito(compradorId);
+        
+        // Validar que el descuento existe y es válido
+        if (!descuentoService.validarDescuentoAplicable(descuentoId)) {
+            throw new BadRequestException("El descuento no es válido o ha expirado");
+        }
+        
+        carrito.setDescuento(new com.tpo.ecommerce.entity.Descuento());
+        carrito.getDescuento().setId(descuentoId);
+        
+        return mapperCarrito.toDto(carritoRepository.save(carrito));
+    }
+
+    /**
+     * Elimina el descuento del carrito
+     * @param compradorId ID del comprador
+     * @return Carrito actualizado sin descuento
+     */
+    @Transactional
+    public CarritoDTO removerDescuentoDelCarrito(Long compradorId) {
+        Carrito carrito = obtenerOCrearCarrito(compradorId);
+        carrito.setDescuento(null);
+        return mapperCarrito.toDto(carritoRepository.save(carrito));
     }
 }

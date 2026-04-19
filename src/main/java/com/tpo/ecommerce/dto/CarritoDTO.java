@@ -16,4 +16,5 @@ public class CarritoDTO {
     private Long compradorId;
     private List<ItemCarritoDTO> items;
     private double total;
-}   
+    private Long descuentoId;
+}
