@@ -41,6 +41,10 @@ public class Orden {
     @OneToOne(mappedBy = "orden", fetch = FetchType.LAZY)
     private Envio envio;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "descuento_id")
+    private com.tpo.ecommerce.entity.Descuento descuento;
+
     @Column(nullable = false)
     private LocalDateTime fecha;
 
@@ -50,6 +54,9 @@ public class Orden {
 
     @Column(name = "total")
     private double total;
+
+    @Column(name = "descuento_aplicado")
+    private Double descuentoAplicado;
 
 
 }

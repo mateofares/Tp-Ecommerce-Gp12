@@ -33,6 +33,7 @@ public class OrdenService implements IOrdenService {
     private final ProductoRepository productoRepository;
     private final MapperOrden mapperOrden;
     private final IPagoService pagoService;
+    private final IDescuentoService descuentoService;
 
     @Transactional
     public OrdenDTO comprar(OrdenDTO dto) {
@@ -114,6 +115,61 @@ public class OrdenService implements IOrdenService {
                 throw new DuplicateResourceException("Producto", "id", productoId);
             }
         }
+    }
+
+    /**
+     * Aplica un descuento a una orden
+     * @param ordenId ID de la orden
+     * @param descuentoId ID del descuento
+     * @return Orden actualizada con descuento y total recalculado
+     */
+    @Transactional
+    public OrdenDTO aplicarDescuentoAOrden(Long ordenId, Long descuentoId) {
+        Orden orden = ordenRepository.findById(ordenId)
+                .orElseThrow(() -> new NotFoundException("Orden no encontrada con ID: " + ordenId));
+        
+        // Validar que el descuento existe y es válido
+        if (!descuentoService.validarDescuentoAplicable(descuentoId)) {
+            throw new BadRequestException("El descuento no es válido o ha expirado");
+        }
+        
+        // Calcular el descuento a aplicar
+        Double descuentoMonto = descuentoService.calcularDescuento(orden.getTotal(), descuentoId);
+        
+        // Aplicar descuento
+        orden.setDescuento(new com.tpo.ecommerce.entity.Descuento());
+        orden.getDescuento().setId(descuentoId);
+        orden.setDescuentoAplicado(descuentoMonto);
+        
+        // Recalcular total
+        Double totalConDescuento = orden.getTotal() - descuentoMonto;
+        orden.setTotal(totalConDescuento);
+        
+        // Incrementar usos del descuento
+        descuentoService.incrementarUsos(descuentoId);
+        
+        return mapperOrden.toDto(ordenRepository.save(orden));
+    }
+
+    /**
+     * Elimina el descuento de una orden
+     * @param ordenId ID de la orden
+     * @return Orden actualizada sin descuento y total original
+     */
+    @Transactional
+    public OrdenDTO removerDescuentoDeOrden(Long ordenId) {
+        Orden orden = ordenRepository.findById(ordenId)
+                .orElseThrow(() -> new NotFoundException("Orden no encontrada con ID: " + ordenId));
+        
+        if (orden.getDescuento() != null && orden.getDescuentoAplicado() != null) {
+            // Restaurar total original
+            orden.setTotal(orden.getTotal() + orden.getDescuentoAplicado());
+        }
+        
+        orden.setDescuento(null);
+        orden.setDescuentoAplicado(null);
+        
+        return mapperOrden.toDto(ordenRepository.save(orden));
     }
 
 }

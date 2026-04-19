@@ -29,5 +29,18 @@ public class OrdenController {
     public List<OrdenDTO> misVentas(@PathVariable Long vendedorId) {
         return ordenService.misVentas(vendedorId);
     }
+
+    @PostMapping("/{ordenId}/descuento/{descuentoId}")
+    public OrdenDTO aplicarDescuento(
+            @PathVariable Long ordenId,
+            @PathVariable Long descuentoId
+    ) {
+        return ((OrdenService) ordenService).aplicarDescuentoAOrden(ordenId, descuentoId);
+    }
+
+    @DeleteMapping("/{ordenId}/descuento")
+    public OrdenDTO removerDescuento(@PathVariable Long ordenId) {
+        return ((OrdenService) ordenService).removerDescuentoDeOrden(ordenId);
+    }
     
 }

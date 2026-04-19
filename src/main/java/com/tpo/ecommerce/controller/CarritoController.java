@@ -38,5 +38,18 @@ public class CarritoController {
     public OrdenDTO comprar(@RequestBody CarritoDTO dto) {
         return carritoService.comprar(dto);
     }
+
+    @PostMapping("/{compradorId}/descuento/{descuentoId}")
+    public CarritoDTO aplicarDescuento(
+            @PathVariable Long compradorId,
+            @PathVariable Long descuentoId
+    ) {
+        return ((CarritoService) carritoService).aplicarDescuentoAlCarrito(compradorId, descuentoId);
+    }
+
+    @DeleteMapping("/{compradorId}/descuento")
+    public CarritoDTO removerDescuento(@PathVariable Long compradorId) {
+        return ((CarritoService) carritoService).removerDescuentoDelCarrito(compradorId);
+    }
     
 }

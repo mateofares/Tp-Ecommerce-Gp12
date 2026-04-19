@@ -18,4 +18,6 @@ public class OrdenDTO {
     private List<ItemOrdenDTO> items;
     private EstadoOrden estado;
     private double total;
+    private Long descuentoId;
+    private Double descuentoAplicado;
 }

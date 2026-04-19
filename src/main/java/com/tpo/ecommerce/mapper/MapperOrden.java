@@ -24,12 +24,19 @@ public class MapperOrden {
                 ))
                 .toList();
 
-        return new OrdenDTO(
+        OrdenDTO dto = new OrdenDTO(
                 orden.getId(),
                 orden.getComprador().getId(),
                 items,
                 orden.getEstado(),
                 orden.getTotal()
         );
+        
+        if (orden.getDescuento() != null) {
+            dto.setDescuentoId(orden.getDescuento().getId());
+            dto.setDescuentoAplicado(orden.getDescuentoAplicado());
+        }
+        
+        return dto;
     }
 }
