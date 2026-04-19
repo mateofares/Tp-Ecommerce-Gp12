@@ -117,7 +117,7 @@ public class DireccionService implements IDireccionService {
         Long usuarioId = direccion.getUsuario().getId();
 
         List<Direccion> todasLasDirecciones = direccionRepository
-                .findByUsuarioIdAndPredeterminada(usuarioId, true);
+                .findAllByUsuarioIdAndPredeterminada(usuarioId, true);
 
         for (Direccion dir : todasLasDirecciones) {
             dir.setPredeterminada(false);

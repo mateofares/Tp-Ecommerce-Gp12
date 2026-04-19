@@ -13,6 +13,7 @@ public interface DireccionRepository extends JpaRepository<Direccion, Long> {
     List<Direccion> findByUsuarioId(Long usuarioId);
 
     Optional<Direccion> findByUsuarioIdAndPredeterminada(Long usuarioId, Boolean predeterminada);
+    List<Direccion> findAllByUsuarioIdAndPredeterminada(Long usuarioId, Boolean predeterminada);
 
     List<Direccion> findByUsuarioIdAndActiva(Long usuarioId, Boolean activa);
 

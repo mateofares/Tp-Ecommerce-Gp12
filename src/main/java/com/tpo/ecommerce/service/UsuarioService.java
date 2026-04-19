@@ -1,13 +1,11 @@
 package com.tpo.ecommerce.service;
 
-import com.tpo.ecommerce.dto.LoginRequestDTO;
 import com.tpo.ecommerce.dto.UsuarioDTO;
 import com.tpo.ecommerce.entity.Usuario;
 import com.tpo.ecommerce.enums.UserRol;
 import com.tpo.ecommerce.exceptions.BadRequestException;
 import com.tpo.ecommerce.exceptions.DuplicateResourceException;
 import com.tpo.ecommerce.exceptions.NotFoundException;
-import com.tpo.ecommerce.exceptions.UnauthorizedException;
 import lombok.AllArgsConstructor;
 import com.tpo.ecommerce.mapper.MapperUsuario;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,124 +17,69 @@ import java.util.List;
 
 @AllArgsConstructor
 @Service
-public class UsuarioService implements IUsuarioService{
-    private UsuarioRepository usuarioRepository;
-    private MapperUsuario mapperUsuario;
-    private PasswordEncoder passwordEncoder;
+public class UsuarioService implements IUsuarioService {
+    
+    private final UsuarioRepository usuarioRepository;
+    private final MapperUsuario mapperUsuario;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public List<UsuarioDTO> getUsuarios(Long id,UserRol userRol, String nombre, String mail, String apellido) {
+    public List<UsuarioDTO> getUsuarios(Long id, UserRol userRol, String nombre, String mail, String apellido) {
         List<Usuario> usuarios = usuarioRepository.findAll();
 
         if(id != null) usuarios = usuarios.stream().filter(usuario -> usuario.getId().equals(id)).toList();
-
-        if (userRol != null )usuarios = usuarios.stream().filter(usuario -> usuario.getUserRol().toString().equalsIgnoreCase(userRol.toString())).toList();
-
+        if (userRol != null )usuarios = usuarios.stream().filter(usuario -> usuario.getUserRol() == userRol).toList();
         if (nombre != null) usuarios = usuarios.stream().filter(usuario -> usuario.getNombre().equalsIgnoreCase(nombre)).toList();
-
         if (mail != null) usuarios = usuarios.stream().filter(usuario -> usuario.getMail().equalsIgnoreCase(mail)).toList();
-
         if (apellido != null) usuarios = usuarios.stream().filter(usuario -> usuario.getApellido().equalsIgnoreCase(apellido)).toList();
 
-        return usuarios.stream().map(usuario -> mapperUsuario.toDto(usuario)).toList();
-    }
-
-    private UsuarioDTO createUsuario(UsuarioDTO usuario) {
-        validarData(
-                usuario.getNombre(),
-                usuario.getMail(),
-                usuario.getContrasenia(),
-                usuario.getApellido()
-        );
-
-        validarMailFormato(usuario.getMail());
-        mailDisponible(usuario.getMail(), null);
-
-        return mapperUsuario.toDto(usuarioRepository.save(
-                new Usuario(
-                        usuario.getApellido().trim(),
-                        passwordEncoder.encode(usuario.getContrasenia()),
-                        usuario.getMail().trim(),
-                        usuario.getNombre().trim(),
-                        usuario.getUserRol()
-                )));
-    }
-
-    @Override
-    public UsuarioDTO register(UsuarioDTO usuario) {
-        return createUsuario(usuario);
-    }
-
-    @Override
-    public UsuarioDTO login(LoginRequestDTO loginRequest) {
-        Usuario usuario = usuarioRepository.findByMail(loginRequest.getMail())
-                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
-
-        if (!passwordEncoder.matches(loginRequest.getContrasenia(), usuario.getContrasenia())) {
-            throw new UnauthorizedException("Contrasenia incorrecta");
-        }
-
-        return mapperUsuario.toDto(usuario);
+        return usuarios.stream().map(mapperUsuario::toDto).toList();
     }
 
     @Override
     public void deleteUsuario(Long id) {
+        if(!usuarioRepository.existsById(id)) {
+            throw new NotFoundException("Usuario no encontrado por id");
+        }
         usuarioRepository.deleteById(id);
     }
 
-    public UsuarioDTO updateUsuario(Long id,UserRol userRol, String nombre, String mail, String apellido,String contrasenia){
-        if (usuarioRepository.existsById(id)){
-            Usuario usuario = usuarioRepository.findById(id).get();
+    @Override
+    public UsuarioDTO updateUsuario(Long id, UserRol userRol, String nombre, String mail, String apellido, String contrasenia) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado por id"));
 
-
-            if (userRol != null )usuario.setUserRol(userRol);
-
-            if (nombre != null) usuario.setNombre(nombre);
-
-            if (mail != null) {
-                validarMailFormato(mail);
-                mailDisponible(mail, id);
-                usuario.setMail(mail.trim());
-            }
-
-            if (apellido != null) usuario.setApellido(apellido);
-
-            if (contrasenia != null) usuario.setContrasenia(passwordEncoder.encode(contrasenia));
-
-            return mapperUsuario.toDto(usuarioRepository.save(usuario));
-
-        }else {
-            throw new NotFoundException("Usuario no encontrado por id");
+        if (userRol != null) usuario.setUserRol(userRol);
+        if (nombre != null) usuario.setNombre(nombre);
+        if (apellido != null) usuario.setApellido(apellido);
+        
+        if (mail != null && !mail.equals(usuario.getMail())) {
+            validarMailFormato(mail);
+            mailDisponibleParaUpdate(mail, id);
+            usuario.setMail(mail.trim());
         }
 
-
-    }
-
-    private void validarData(String nombre, String mail, String contrasenia, String apellido) {
-
-        if (!StringUtils.hasText(nombre) || !StringUtils.hasText(mail)
-                || !StringUtils.hasText(contrasenia) || !StringUtils.hasText(apellido)) {
-            throw new BadRequestException("Todos los campos son obligatorios");
+        if (StringUtils.hasText(contrasenia)) {
+            usuario.setContrasenia(passwordEncoder.encode(contrasenia));
         }
+
+        return mapperUsuario.toDto(usuarioRepository.save(usuario));
     }
+
+    // --- VALIDACIONES SOLO PARA UPDATE ---
 
     private void validarMailFormato(String mail) {
-        if (!StringUtils.hasText(mail)) {
-            throw new BadRequestException("Mail invalido");
-        }
-
         String mailTrim = mail.trim();
         if (!mailTrim.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
             throw new BadRequestException("Formato de mail invalido");
         }
     }
 
-    private void mailDisponible(String mail, Long idUsuarioActual) {
+    private void mailDisponibleParaUpdate(String mail, Long idUsuarioActual) {
         usuarioRepository.findByMail(mail).ifPresent(usuarioExistente -> {
-            if (idUsuarioActual == null || !usuarioExistente.getId().equals(idUsuarioActual)) {
+            if (!usuarioExistente.getId().equals(idUsuarioActual)) {
                 throw new DuplicateResourceException("Usuario", "mail", mail);
             }
         });
     }
-
 }
