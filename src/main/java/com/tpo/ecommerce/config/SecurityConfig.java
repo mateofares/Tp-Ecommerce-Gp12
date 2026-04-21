@@ -27,13 +27,25 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
-                        // Endpoints publicos de autenticacion
-                        .requestMatchers("/api/auth/**").permitAll()
-                        // Swagger UI
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                        // Permitir ver productos sin autenticacion
-                        .requestMatchers(HttpMethod.GET, "/productos").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/productos/**").permitAll()
+                        // 1. ENDPOINTS PÚBLICOS (Cualquiera entra)
+                .requestMatchers("/api/auth/**").permitAll()                .requestMatchers(HttpMethod.GET, "/productos/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/resenias/producto/**").permitAll()
+
+                // 2. ENDPOINTS EXCLUSIVOS DEL ADMINISTRADOR (Gestión)
+                .requestMatchers(HttpMethod.GET, "/usuarios/**").hasAuthority("ADMINISTRADOR")
+                .requestMatchers(HttpMethod.DELETE, "/usuarios/**").hasAuthority("ADMINISTRADOR")
+                .requestMatchers(HttpMethod.PATCH, "/facturas/*/anular").hasAuthority("ADMINISTRADOR")
+                .requestMatchers(HttpMethod.PATCH, "/envios/*/estado").hasAuthority("ADMINISTRADOR")
+
+                // 3. ENDPOINTS EXCLUSIVOS DEL USUARIO (Comprador/Vendedor)
+                .requestMatchers("/carrito/**").hasAuthority("USUARIO")
+                .requestMatchers(HttpMethod.POST, "/ordenes/**").hasAuthority("USUARIO")
+                .requestMatchers(HttpMethod.POST, "/productos/**").hasAuthority("USUARIO")
+                .requestMatchers(HttpMethod.PATCH, "/productos/**").hasAuthority("USUARIO")
+                .requestMatchers(HttpMethod.DELETE, "/productos/**").hasAuthority("USUARIO")
+                .requestMatchers(HttpMethod.POST, "/resenias/**").hasAuthority("USUARIO")
+                .requestMatchers("/direcciones/**").hasAuthority("USUARIO")
+                .requestMatchers("/pagos/**").hasAuthority("USUARIO")
                         // Todo lo demas requiere autenticacion
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

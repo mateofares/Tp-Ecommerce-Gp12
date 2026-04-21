@@ -13,7 +13,6 @@ import com.tpo.ecommerce.mapper.MapperFactura;
 import com.tpo.ecommerce.repository.FacturaRepository;
 import com.tpo.ecommerce.repository.ItemFacturaRepository;
 import com.tpo.ecommerce.repository.OrdenRepository;
-import com.tpo.ecommerce.repository.UsuarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,6 @@ public class FacturaService implements IFacturaService {
     private final FacturaRepository facturaRepository;
     private final ItemFacturaRepository itemFacturaRepository;
     private final OrdenRepository ordenRepository;
-    private final UsuarioRepository usuarioRepository;
     private final MapperFactura mapperFactura;
     private final ObjectMapper objectMapper;
 
@@ -59,11 +57,11 @@ public class FacturaService implements IFacturaService {
                 numeroFactura,
                 usuario.getNombre(),
                 usuario.getApellido(),
-                usuario.getCuitDni(),
+                null,
                 orden.getId().toString(),
                 detallesItemsJson,
                 orden.getTotal(),
-                usuario.getDescripcionImpositiva()
+                null
         );
 
         factura = facturaRepository.save(factura);
@@ -133,10 +131,10 @@ public class FacturaService implements IFacturaService {
     }
 
     private String generarNumeroFactura() {
-        int año = LocalDateTime.now().getYear();
-        Long countAño = facturaRepository.countByAño(año);
-        Long numeroSecuencial = countAño + 1;
-        return String.format("FAC-%d-%05d", año, numeroSecuencial);
+        int anio = LocalDateTime.now().getYear();
+        Long countAnio = facturaRepository.countByAnio(anio);
+        Long numeroSecuencial = countAnio + 1;
+        return String.format("FAC-%d-%05d", anio, numeroSecuencial);
     }
 
     private String serializarItemsAJson(List<ItemOrden> items) {
