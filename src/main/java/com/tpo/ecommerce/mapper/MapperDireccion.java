@@ -5,7 +5,7 @@ import com.tpo.ecommerce.entity.Usuario;
 import org.springframework.stereotype.Component;
 
 
-@Compponent
+@Component
 public class MapperDireccion {
 
     public DireccionDTO toDTO(Direccion direccion) {

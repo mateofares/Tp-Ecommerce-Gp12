@@ -10,6 +10,7 @@ import com.tpo.ecommerce.exceptions.NotFoundException;
 import com.tpo.ecommerce.exceptions.UnauthorizedException;
 import lombok.AllArgsConstructor;
 import com.tpo.ecommerce.mapper.MapperUsuario;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import com.tpo.ecommerce.repository.UsuarioRepository;
@@ -21,6 +22,7 @@ import java.util.List;
 public class UsuarioService implements IUsuarioService{
     private UsuarioRepository usuarioRepository;
     private MapperUsuario mapperUsuario;
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public List<UsuarioDTO> getUsuarios(Long id,UserRol userRol, String nombre, String mail, String apellido) {
@@ -53,7 +55,7 @@ public class UsuarioService implements IUsuarioService{
         return mapperUsuario.toDto(usuarioRepository.save(
                 new Usuario(
                         usuario.getApellido().trim(),
-                        usuario.getContrasenia(),
+                        passwordEncoder.encode(usuario.getContrasenia()),
                         usuario.getMail().trim(),
                         usuario.getNombre().trim(),
                         usuario.getUserRol()
@@ -70,7 +72,7 @@ public class UsuarioService implements IUsuarioService{
         Usuario usuario = usuarioRepository.findByMail(loginRequest.getMail())
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
-        if (!usuario.getContrasenia().equals(loginRequest.getContrasenia())) {
+        if (!passwordEncoder.matches(loginRequest.getContrasenia(), usuario.getContrasenia())) {
             throw new UnauthorizedException("Contrasenia incorrecta");
         }
 
@@ -99,7 +101,7 @@ public class UsuarioService implements IUsuarioService{
 
             if (apellido != null) usuario.setApellido(apellido);
 
-            if (contrasenia != null) usuario.setContrasenia(contrasenia);
+            if (contrasenia != null) usuario.setContrasenia(passwordEncoder.encode(contrasenia));
 
             return mapperUsuario.toDto(usuarioRepository.save(usuario));
 
