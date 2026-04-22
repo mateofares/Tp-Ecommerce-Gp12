@@ -5,7 +5,9 @@ import java.util.List;
 import com.tpo.ecommerce.dto.OrdenDTO;
 
 public interface IOrdenService {
-    public OrdenDTO comprar(OrdenDTO ordenDTO);
-    public List<OrdenDTO> misCompras(Long compradorId); 
-    public List<OrdenDTO> misVentas(Long vendedorId);
+    OrdenDTO comprar(OrdenDTO ordenDTO);
+    List<OrdenDTO> misCompras(Long compradorId);
+    List<OrdenDTO> misVentas(Long vendedorId);
+    OrdenDTO aplicarDescuentoAOrden(Long ordenId, Long descuentoId);
+    OrdenDTO removerDescuentoDeOrden(Long ordenId);
 }

@@ -24,19 +24,21 @@ public class MapperOrden {
                 ))
                 .toList();
 
-        OrdenDTO dto = new OrdenDTO(
-                orden.getId(),
-                orden.getComprador().getId(),
-                items,
-                orden.getEstado(),
-                orden.getTotal()
-        );
-        
+        OrdenDTO dto = new OrdenDTO();
+        dto.setId(orden.getId());
+        dto.setCompradorId(orden.getComprador().getId());
+        dto.setItems(items);
+        dto.setEstado(orden.getEstado());
+        dto.setTotal(orden.getTotal());
+
+        if (orden.getDireccion() != null) {
+            dto.setDireccionId(orden.getDireccion().getId());
+        }
         if (orden.getDescuento() != null) {
             dto.setDescuentoId(orden.getDescuento().getId());
             dto.setDescuentoAplicado(orden.getDescuentoAplicado());
         }
-        
+
         return dto;
     }
 }

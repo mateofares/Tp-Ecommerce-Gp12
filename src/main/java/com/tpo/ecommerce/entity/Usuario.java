@@ -55,8 +55,6 @@ public class Usuario implements UserDetails {
         this.userRol = userRol;
     }
 
-    // ===== UserDetails implementation =====
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(userRol.name()));

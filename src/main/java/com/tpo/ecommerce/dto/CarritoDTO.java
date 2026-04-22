@@ -14,6 +14,7 @@ import java.util.List;
 public class CarritoDTO {
     private Long id;
     private Long compradorId;
+    private Long direccionId;
     private List<ItemCarritoDTO> items;
     private double total;
     private Long descuentoId;

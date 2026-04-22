@@ -4,12 +4,14 @@ import com.tpo.ecommerce.enums.TipoDescuento;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 public class DescuentoDTO {
     private Long id;
     private String codigoDescuento;
@@ -17,17 +19,4 @@ public class DescuentoDTO {
     private Double valor;
     private LocalDate validoDesde;
     private LocalDate validoHasta;
-    private Integer maximoDeUsos;
-    private Integer usosActuales;
-
-    public DescuentoDTO(String codigoDescuento, TipoDescuento tipo, Double valor, LocalDate validoDesde,
-                        LocalDate validoHasta, Integer maximoDeUsos) {
-        this.codigoDescuento = codigoDescuento;
-        this.tipo = tipo;
-        this.valor = valor;
-        this.validoDesde = validoDesde;
-        this.validoHasta = validoHasta;
-        this.maximoDeUsos = maximoDeUsos;
-        this.usosActuales = 0;
-    }
 }

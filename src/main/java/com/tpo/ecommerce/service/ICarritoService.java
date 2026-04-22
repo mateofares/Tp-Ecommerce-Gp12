@@ -14,4 +14,6 @@ public interface ICarritoService {
     CarritoDTO ver(Long compradorId);
 
     OrdenDTO comprar(CarritoDTO dto);
+    CarritoDTO aplicarDescuentoAlCarrito(Long compradorId, Long descuentoId);
+    CarritoDTO removerDescuentoDelCarrito(Long compradorId);
 }

@@ -27,7 +27,6 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        // 1. Validaciones que tenías en UsuarioService
         validarData(request.getNombre(), request.getMail(), request.getContrasenia(), request.getApellido());
         validarMailFormato(request.getMail());
         mailDisponible(request.getMail());
@@ -51,7 +50,6 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        // AuthenticationManager hace la magia de validar la contraseña encriptada por nosotros
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getMail(),
@@ -60,7 +58,7 @@ public class AuthenticationService {
         );
         
         var user = repository.findByMail(request.getMail())
-                .orElseThrow(); // Podrías lanzar tu NotFoundException acá
+                .orElseThrow();
         
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
@@ -68,7 +66,6 @@ public class AuthenticationService {
                 .build();
     }
 
-    // --- MÉTODOS DE VALIDACIÓN PRIVADOS MUDADOS ACÁ ---
 
     private void validarData(String nombre, String mail, String contrasenia, String apellido) {
         if (!StringUtils.hasText(nombre) || !StringUtils.hasText(mail)

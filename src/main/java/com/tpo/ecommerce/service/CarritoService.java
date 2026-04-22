@@ -15,7 +15,11 @@ import com.tpo.ecommerce.exceptions.DuplicateResourceException;
 import com.tpo.ecommerce.exceptions.NotFoundException;
 import com.tpo.ecommerce.mapper.MapperCarrito;
 import com.tpo.ecommerce.mapper.MapperOrden;
+import com.tpo.ecommerce.entity.Direccion;
+import com.tpo.ecommerce.mapper.MapperProducto;
 import com.tpo.ecommerce.repository.CarritoRepository;
+import com.tpo.ecommerce.repository.DescuentoRepository;
+import com.tpo.ecommerce.repository.DireccionRepository;
 import com.tpo.ecommerce.repository.OrdenRepository;
 import com.tpo.ecommerce.repository.ProductoRepository;
 import com.tpo.ecommerce.repository.UsuarioRepository;
@@ -38,6 +42,8 @@ public class CarritoService implements ICarritoService {
     private final UsuarioRepository usuarioRepository;
     private final ProductoRepository productoRepository;
     private final OrdenRepository ordenRepository;
+    private final DireccionRepository direccionRepository;
+    private final DescuentoRepository descuentoRepository;
     private final MapperCarrito mapperCarrito;
     private final MapperOrden mapperOrden;
     private final IPagoService pagoService;
@@ -133,23 +139,33 @@ public class CarritoService implements ICarritoService {
         if (dto == null || dto.getCompradorId() == null) {
             throw new BadRequestException("Debe indicar el compradorId");
         }
+        if (dto.getDireccionId() == null) {
+            throw new BadRequestException("Debe indicar la dirección de envío");
+        }
 
         Carrito carrito = obtenerOCrearCarrito(dto.getCompradorId());
         if (carrito.getItems().isEmpty()) {
             throw new BadRequestException("El carrito esta vacio");
         }
 
+        Direccion direccion = direccionRepository.findById(dto.getDireccionId())
+                .orElseThrow(() -> new NotFoundException("Dirección no encontrada"));
+        if (!direccion.getUsuario().getId().equals(dto.getCompradorId())) {
+            throw new BadRequestException("La dirección no pertenece al comprador");
+        }
+
         Orden orden = new Orden();
         orden.setComprador(carrito.getComprador());
+        orden.setDireccion(direccion);
         orden.setFecha(LocalDateTime.now());
         orden.setEstado(EstadoOrden.CONFIRMADA);
 
         List<ItemOrden> itemsOrden = new ArrayList<>();
-        double total = 0D;
+        double subtotal = 0D;
 
         for (ItemCarrito itemCarrito : carrito.getItems()) {
             Producto producto = itemCarrito.getProducto();
-            double precioUnitario = producto.getPrecio() != null ? producto.getPrecio() : 0D;
+            double precioUnitario = MapperProducto.calcularPrecioEfectivo(producto.getPrecio(), producto.getDescuento());
 
             ItemOrden itemOrden = new ItemOrden();
             itemOrden.setOrden(orden);
@@ -159,14 +175,16 @@ public class CarritoService implements ICarritoService {
             itemOrden.setCantidad(itemCarrito.getCantidad());
             itemsOrden.add(itemOrden);
 
-            total += precioUnitario * itemCarrito.getCantidad();
+            subtotal += precioUnitario * itemCarrito.getCantidad();
         }
 
         orden.setItems(itemsOrden);
-        orden.setTotal(total);
+        orden.setTotal(subtotal);
 
         Orden ordenGuardada = ordenRepository.save(orden);
         pagoService.crearPendientePorOrden(ordenGuardada.getId());
+
+        carrito.setDescuento(null);
         carrito.getItems().clear();
         carritoRepository.save(carrito);
 
@@ -230,32 +248,22 @@ public class CarritoService implements ICarritoService {
         }
     }
 
-    /**
-     * Aplica un descuento a un carrito
-     * @param compradorId ID del comprador
-     * @param descuentoId ID del descuento
-     * @return Carrito actualizado con descuento aplicado
-     */
+    @Override
     @Transactional
     public CarritoDTO aplicarDescuentoAlCarrito(Long compradorId, Long descuentoId) {
         Carrito carrito = obtenerOCrearCarrito(compradorId);
-        
-        // Validar que el descuento existe y es válido
+
+        // calcularDescuentoSinValidar verifica existencia; validarDescuentoAplicable verifica vigencia
         if (!descuentoService.validarDescuentoAplicable(descuentoId)) {
             throw new BadRequestException("El descuento no es válido o ha expirado");
         }
-        
-        carrito.setDescuento(new com.tpo.ecommerce.entity.Descuento());
-        carrito.getDescuento().setId(descuentoId);
-        
+
+        carrito.setDescuento(descuentoRepository.getReferenceById(descuentoId));
+
         return mapperCarrito.toDto(carritoRepository.save(carrito));
     }
 
-    /**
-     * Elimina el descuento del carrito
-     * @param compradorId ID del comprador
-     * @return Carrito actualizado sin descuento
-     */
+    @Override
     @Transactional
     public CarritoDTO removerDescuentoDelCarrito(Long compradorId) {
         Carrito carrito = obtenerOCrearCarrito(compradorId);

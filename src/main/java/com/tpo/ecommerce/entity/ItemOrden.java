@@ -19,11 +19,11 @@ public class ItemOrden {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "orden_id", nullable = false)
     private Orden orden;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
 

@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface FacturaRepository extends JpaRepository<Factura, Long> {
 
     Optional<Factura> findByOrdenId(Long ordenId);
+    Optional<Factura> findByNumeroFactura(String numeroFactura);
 
     @Query("SELECT COUNT(f) FROM Factura f WHERE YEAR(f.fechaFactura) = ?1")
     Long countByAnio(int anio);

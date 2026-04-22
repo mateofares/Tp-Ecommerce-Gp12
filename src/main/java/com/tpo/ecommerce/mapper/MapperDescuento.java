@@ -5,8 +5,6 @@ import com.tpo.ecommerce.entity.Descuento;
 import org.springframework.stereotype.Component;
 
 @Component
-
-
 public class MapperDescuento {
 
     public DescuentoDTO toDto(Descuento descuento) {
@@ -16,20 +14,17 @@ public class MapperDescuento {
                 descuento.getTipo(),
                 descuento.getValor(),
                 descuento.getValidoDesde(),
-                descuento.getValidoHasta(),
-                descuento.getMaximoDeUsos(),
-                descuento.getUsosActuales()
+                descuento.getValidoHasta()
         );
     }
 
-    public Descuento toEntity(DescuentoDTO descuentoDTO) {
+    public Descuento toEntity(DescuentoDTO dto) {
         return new Descuento(
-                descuentoDTO.getCodigoDescuento(),
-                descuentoDTO.getTipo(),
-                descuentoDTO.getValor(),
-                descuentoDTO.getValidoDesde(),
-                descuentoDTO.getValidoHasta(),
-                descuentoDTO.getMaximoDeUsos()
+                dto.getCodigoDescuento(),
+                dto.getTipo(),
+                dto.getValor(),
+                dto.getValidoDesde(),
+                dto.getValidoHasta()
         );
     }
 }

@@ -26,4 +26,6 @@ public class ProductoDTO {
     private Color color;
     private Estado estado;
     private String imagenUrl;
+    private Long descuentoId;
+    private Double precioConDescuento;
 }

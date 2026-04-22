@@ -28,7 +28,6 @@ public class EnvioService implements IEnvioService {
         
         Orden orden = ordenRepository.findById(ordenId)
             .orElseThrow(() -> new NotFoundException("Orden no encontrada con id: " + ordenId));
-        // Por qué validar primero?
         // Si la orden no existe, no puedes crear un envío huérfano
         
         

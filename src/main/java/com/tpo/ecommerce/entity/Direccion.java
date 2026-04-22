@@ -19,7 +19,7 @@ public class Direccion {
     @Column(name = "direccion_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 

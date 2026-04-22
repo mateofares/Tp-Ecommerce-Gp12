@@ -59,4 +59,8 @@ public class Producto {
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
+
+    @ManyToOne()
+    @JoinColumn(name = "descuento_id")
+    private Descuento descuento;
 }

@@ -49,12 +49,6 @@ public class DescuentoController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/usar")
-    public ResponseEntity<Void> usarDescuento(@PathVariable Long id) {
-        descuentoService.incrementarUsos(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @PostMapping("/{id}/calcular")
     public ResponseEntity<Double> calcularDescuento(
             @PathVariable Long id,

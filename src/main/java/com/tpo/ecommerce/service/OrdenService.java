@@ -11,6 +11,10 @@ import com.tpo.ecommerce.exceptions.BadRequestException;
 import com.tpo.ecommerce.exceptions.DuplicateResourceException;
 import com.tpo.ecommerce.exceptions.NotFoundException;
 import com.tpo.ecommerce.mapper.MapperOrden;
+import com.tpo.ecommerce.entity.Direccion;
+import com.tpo.ecommerce.mapper.MapperProducto;
+import com.tpo.ecommerce.repository.DescuentoRepository;
+import com.tpo.ecommerce.repository.DireccionRepository;
 import com.tpo.ecommerce.repository.OrdenRepository;
 import com.tpo.ecommerce.repository.ProductoRepository;
 import com.tpo.ecommerce.repository.UsuarioRepository;
@@ -31,6 +35,8 @@ public class OrdenService implements IOrdenService {
     private final OrdenRepository ordenRepository;
     private final UsuarioRepository usuarioRepository;
     private final ProductoRepository productoRepository;
+    private final DireccionRepository direccionRepository;
+    private final DescuentoRepository descuentoRepository;
     private final MapperOrden mapperOrden;
     private final IPagoService pagoService;
     private final IDescuentoService descuentoService;
@@ -45,11 +51,22 @@ public class OrdenService implements IOrdenService {
         }
 
         validarProductosUnicos(dto.getItems());
+
         Usuario comprador = usuarioRepository.findById(dto.getCompradorId())
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
+        if (dto.getDireccionId() == null) {
+            throw new BadRequestException("Debe indicar la dirección de envío");
+        }
+        Direccion direccion = direccionRepository.findById(dto.getDireccionId())
+                .orElseThrow(() -> new NotFoundException("Dirección no encontrada"));
+        if (!direccion.getUsuario().getId().equals(dto.getCompradorId())) {
+            throw new BadRequestException("La dirección no pertenece al comprador");
+        }
+
         Orden orden = new Orden();
         orden.setComprador(comprador);
+        orden.setDireccion(direccion);
         orden.setFecha(LocalDateTime.now());
         orden.setEstado(EstadoOrden.CONFIRMADA);
 
@@ -67,7 +84,7 @@ public class OrdenService implements IOrdenService {
             Producto producto = productoRepository.findById(itemDTO.getProductoId())
                     .orElseThrow(() -> new NotFoundException("Producto no encontrado"));
 
-            double precioUnitario = producto.getPrecio() != null ? producto.getPrecio() : 0D;
+            double precioUnitario = MapperProducto.calcularPrecioEfectivo(producto.getPrecio(), producto.getDescuento());
 
             ItemOrden itemOrden = new ItemOrden();
             itemOrden.setOrden(orden);
@@ -123,31 +140,23 @@ public class OrdenService implements IOrdenService {
      * @param descuentoId ID del descuento
      * @return Orden actualizada con descuento y total recalculado
      */
+    @Override
     @Transactional
     public OrdenDTO aplicarDescuentoAOrden(Long ordenId, Long descuentoId) {
         Orden orden = ordenRepository.findById(ordenId)
                 .orElseThrow(() -> new NotFoundException("Orden no encontrada con ID: " + ordenId));
-        
-        // Validar que el descuento existe y es válido
-        if (!descuentoService.validarDescuentoAplicable(descuentoId)) {
-            throw new BadRequestException("El descuento no es válido o ha expirado");
+
+        if (orden.getDescuento() != null) {
+            throw new BadRequestException("La orden ya tiene un descuento aplicado. Remuévalo antes de aplicar uno nuevo.");
         }
-        
-        // Calcular el descuento a aplicar
+
+        // calcularDescuento valida vigencia y lanza excepción si no es aplicable
         Double descuentoMonto = descuentoService.calcularDescuento(orden.getTotal(), descuentoId);
-        
-        // Aplicar descuento
-        orden.setDescuento(new com.tpo.ecommerce.entity.Descuento());
-        orden.getDescuento().setId(descuentoId);
+
+        orden.setDescuento(descuentoRepository.getReferenceById(descuentoId));
         orden.setDescuentoAplicado(descuentoMonto);
-        
-        // Recalcular total
-        Double totalConDescuento = orden.getTotal() - descuentoMonto;
-        orden.setTotal(totalConDescuento);
-        
-        // Incrementar usos del descuento
-        descuentoService.incrementarUsos(descuentoId);
-        
+        orden.setTotal(orden.getTotal() - descuentoMonto);
+
         return mapperOrden.toDto(ordenRepository.save(orden));
     }
 
@@ -156,19 +165,18 @@ public class OrdenService implements IOrdenService {
      * @param ordenId ID de la orden
      * @return Orden actualizada sin descuento y total original
      */
+    @Override
     @Transactional
     public OrdenDTO removerDescuentoDeOrden(Long ordenId) {
         Orden orden = ordenRepository.findById(ordenId)
                 .orElseThrow(() -> new NotFoundException("Orden no encontrada con ID: " + ordenId));
-        
+
         if (orden.getDescuento() != null && orden.getDescuentoAplicado() != null) {
-            // Restaurar total original
             orden.setTotal(orden.getTotal() + orden.getDescuentoAplicado());
+            orden.setDescuento(null);
+            orden.setDescuentoAplicado(null);
         }
-        
-        orden.setDescuento(null);
-        orden.setDescuentoAplicado(null);
-        
+
         return mapperOrden.toDto(ordenRepository.save(orden));
     }
 

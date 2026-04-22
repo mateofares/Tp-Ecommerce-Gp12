@@ -19,11 +19,11 @@ public class ItemCarrito {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "carrito_id", nullable = false)
     private Carrito carrito;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
 

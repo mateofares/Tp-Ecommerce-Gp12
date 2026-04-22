@@ -2,7 +2,6 @@ package com.tpo.ecommerce.controller;
 
 import com.tpo.ecommerce.dto.CarritoDTO;
 import com.tpo.ecommerce.dto.OrdenDTO;
-import com.tpo.ecommerce.service.CarritoService;
 import com.tpo.ecommerce.service.ICarritoService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -44,12 +43,12 @@ public class CarritoController {
             @PathVariable Long compradorId,
             @PathVariable Long descuentoId
     ) {
-        return ((CarritoService) carritoService).aplicarDescuentoAlCarrito(compradorId, descuentoId);
+        return carritoService.aplicarDescuentoAlCarrito(compradorId, descuentoId);
     }
 
     @DeleteMapping("/{compradorId}/descuento")
     public CarritoDTO removerDescuento(@PathVariable Long compradorId) {
-        return ((CarritoService) carritoService).removerDescuentoDelCarrito(compradorId);
+        return carritoService.removerDescuentoDelCarrito(compradorId);
     }
     
 }
