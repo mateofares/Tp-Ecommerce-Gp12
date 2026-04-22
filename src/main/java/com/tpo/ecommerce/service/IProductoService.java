@@ -20,6 +20,7 @@ public interface IProductoService {
                            Marca marca, Talle talle, Color color, Estado estado, String imagenUrl);
 
     void deleteProducto(Long id);
+    void eliminarLogico(Long id);
     ProductoDTO aplicarDescuento(Long productoId, Long descuentoId, Long vendedorId);
     ProductoDTO removerDescuento(Long productoId, Long vendedorId);
 }

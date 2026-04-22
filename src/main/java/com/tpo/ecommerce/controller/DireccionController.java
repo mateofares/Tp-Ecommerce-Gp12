@@ -52,6 +52,12 @@ public class DireccionController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/eliminar-logico")
+    public ResponseEntity<Void> eliminarLogicoPatch(@PathVariable Long id) {
+        direccionService.eliminarLogico(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/{id}/predeterminada")
     public ResponseEntity<DireccionDTO> establecerPredeterminada(@PathVariable Long id) {
         DireccionDTO result = direccionService.establecerPredeterminada(id);

@@ -1,6 +1,7 @@
 package com.tpo.ecommerce.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tpo.ecommerce.enums.EstadoRegistro;
 import com.tpo.ecommerce.repository.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class BeanConfiguration {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> usuarioRepository.findByMail(username)
+                .filter(usuario -> usuario.getEstadoRegistro() == null || usuario.getEstadoRegistro() == EstadoRegistro.ACTIVO)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
     }
 

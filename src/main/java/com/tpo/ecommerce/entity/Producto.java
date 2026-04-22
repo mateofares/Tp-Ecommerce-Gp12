@@ -3,6 +3,7 @@ package com.tpo.ecommerce.entity;
 import com.tpo.ecommerce.enums.Categorias;
 import com.tpo.ecommerce.enums.Color;
 import com.tpo.ecommerce.enums.Estado;
+import com.tpo.ecommerce.enums.EstadoRegistro;
 import com.tpo.ecommerce.enums.Marca;
 import com.tpo.ecommerce.enums.Talle;
 import jakarta.persistence.*;
@@ -55,6 +56,10 @@ public class Producto {
 
     @Column(name = "imagen_url")
     private String imagenUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado_registro")
+    private EstadoRegistro estadoRegistro = EstadoRegistro.ACTIVO;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")

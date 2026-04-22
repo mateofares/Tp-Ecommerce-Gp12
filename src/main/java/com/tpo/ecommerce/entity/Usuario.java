@@ -1,6 +1,7 @@
 package com.tpo.ecommerce.entity;
 
 import com.tpo.ecommerce.enums.UserRol;
+import com.tpo.ecommerce.enums.EstadoRegistro;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -41,6 +42,11 @@ public class Usuario implements UserDetails {
     @Column(name = "apellido")
     private String apellido;
 
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado_registro")
+    private EstadoRegistro estadoRegistro = EstadoRegistro.ACTIVO;
+
     @OneToMany(mappedBy = "usuario")
     private List<Producto> productos;
 
@@ -53,6 +59,7 @@ public class Usuario implements UserDetails {
         this.mail = mail;
         this.nombre = nombre;
         this.userRol = userRol;
+        this.estadoRegistro = EstadoRegistro.ACTIVO;
     }
 
     @Override

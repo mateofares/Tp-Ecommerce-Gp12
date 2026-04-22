@@ -1,6 +1,7 @@
 package com.tpo.ecommerce.controller;
 
 import com.tpo.ecommerce.dto.UsuarioDTO;
+import com.tpo.ecommerce.dto.UsuarioResponseDTO;
 import com.tpo.ecommerce.enums.UserRol;
 import com.tpo.ecommerce.service.IUsuarioService;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ public class UsuarioController {
     private final IUsuarioService usuarioService;
 
     @GetMapping
-    public ResponseEntity<List<UsuarioDTO>> getUsuarios(
+    public ResponseEntity<List<UsuarioResponseDTO>> getUsuarios(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) UserRol userRol,
             @RequestParam(required = false) String nombre,
@@ -32,8 +33,14 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/eliminar-logico")
+    public ResponseEntity<Void> eliminarLogico(@PathVariable Long id) {
+        usuarioService.eliminarLogico(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> updateUsuario(
+    public ResponseEntity<UsuarioResponseDTO> updateUsuario(
             @PathVariable Long id,
             @RequestBody UsuarioDTO usuario
     ){

@@ -5,6 +5,7 @@ import com.tpo.ecommerce.entity.Producto;
 import com.tpo.ecommerce.enums.Categorias;
 import com.tpo.ecommerce.enums.Color;
 import com.tpo.ecommerce.enums.Estado;
+import com.tpo.ecommerce.enums.EstadoRegistro;
 import com.tpo.ecommerce.enums.Marca;
 import com.tpo.ecommerce.enums.Talle;
 import com.tpo.ecommerce.entity.Descuento;
@@ -43,6 +44,7 @@ public class ProductoService implements IProductoService {
         List<Producto> productos = (usuarioId != null)
                 ? productoRepository.findByUsuarioId(usuarioId)
                 : productoRepository.findAll();
+        productos = productos.stream().filter(this::estaActivo).toList();
 
         if (id != null) productos = productos.stream().filter(p -> p.getId() != null && p.getId().equals(id)).toList();
         if (StringUtils.hasText(titulo)) {
@@ -71,6 +73,9 @@ public class ProductoService implements IProductoService {
         }
 
         Producto producto = productoRepository.findById(id).get();
+        if (!estaActivo(producto)) {
+            throw new NotFoundException("Producto no encontrado por id");
+        }
 
         if (StringUtils.hasText(titulo)) producto.setTitulo(titulo);
         if (StringUtils.hasText(descripcion)) producto.setDescripcion(descripcion);
@@ -91,10 +96,21 @@ public class ProductoService implements IProductoService {
     }
 
     @Override
+    public void eliminarLogico(Long id) {
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Producto no encontrado por id"));
+        producto.setEstadoRegistro(EstadoRegistro.ELIMINADO);
+        productoRepository.save(producto);
+    }
+
+    @Override
     @Transactional
     public ProductoDTO aplicarDescuento(Long productoId, Long descuentoId, Long vendedorId) {
         Producto producto = productoRepository.findById(productoId)
                 .orElseThrow(() -> new NotFoundException("Producto no encontrado"));
+        if (!estaActivo(producto)) {
+            throw new NotFoundException("Producto no encontrado");
+        }
 
         if (producto.getUsuario() == null || !producto.getUsuario().getId().equals(vendedorId)) {
             throw new UnauthorizedException("Solo el vendedor del producto puede aplicar un descuento");
@@ -102,6 +118,9 @@ public class ProductoService implements IProductoService {
 
         Descuento descuento = descuentoRepository.findById(descuentoId)
                 .orElseThrow(() -> new NotFoundException("Descuento no encontrado"));
+        if (!estaActivo(descuento)) {
+            throw new NotFoundException("Descuento no encontrado");
+        }
 
         LocalDate hoy = LocalDate.now();
         if (hoy.isBefore(descuento.getValidoDesde()) || hoy.isAfter(descuento.getValidoHasta())) {
@@ -117,6 +136,9 @@ public class ProductoService implements IProductoService {
     public ProductoDTO removerDescuento(Long productoId, Long vendedorId) {
         Producto producto = productoRepository.findById(productoId)
                 .orElseThrow(() -> new NotFoundException("Producto no encontrado"));
+        if (!estaActivo(producto)) {
+            throw new NotFoundException("Producto no encontrado");
+        }
 
         if (producto.getUsuario() == null || !producto.getUsuario().getId().equals(vendedorId)) {
             throw new UnauthorizedException("Solo el vendedor del producto puede remover el descuento");
@@ -130,5 +152,13 @@ public class ProductoService implements IProductoService {
         if (dto == null || !StringUtils.hasText(dto.getTitulo()) || dto.getPrecio() == null || dto.getUsuarioId() == null) {
             throw new BadRequestException("Titulo, precio y vendedor son obligatorios");
         }
+    }
+
+    private boolean estaActivo(Producto producto) {
+        return producto.getEstadoRegistro() == null || producto.getEstadoRegistro() == EstadoRegistro.ACTIVO;
+    }
+
+    private boolean estaActivo(Descuento descuento) {
+        return descuento.getEstadoRegistro() == null || descuento.getEstadoRegistro() == EstadoRegistro.ACTIVO;
     }
 }

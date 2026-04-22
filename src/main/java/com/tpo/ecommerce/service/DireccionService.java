@@ -3,6 +3,7 @@ package com.tpo.ecommerce.service;
 import com.tpo.ecommerce.dto.DireccionDTO;
 import com.tpo.ecommerce.entity.Direccion;
 import com.tpo.ecommerce.entity.Usuario;
+import com.tpo.ecommerce.enums.EstadoRegistro;
 import com.tpo.ecommerce.exceptions.BadRequestException;
 import com.tpo.ecommerce.exceptions.NotFoundException;
 import com.tpo.ecommerce.mapper.MapperDireccion;
@@ -90,6 +91,7 @@ public class DireccionService implements IDireccionService {
         }
         if (dto.getActiva() != null) {
             direccion.setActiva(dto.getActiva());
+            direccion.setEstadoRegistro(dto.getActiva() ? EstadoRegistro.ACTIVO : EstadoRegistro.ELIMINADO);
         }
 
         direccion = direccionRepository.save(direccion);
@@ -104,6 +106,7 @@ public class DireccionService implements IDireccionService {
 
         Direccion direccion = direccionRepository.findById(id).get();
         direccion.setActiva(false);
+        direccion.setEstadoRegistro(EstadoRegistro.ELIMINADO);
         direccionRepository.save(direccion);
     }
 

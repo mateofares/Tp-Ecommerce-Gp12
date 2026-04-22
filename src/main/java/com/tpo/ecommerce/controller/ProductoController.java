@@ -48,6 +48,12 @@ public class ProductoController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/eliminar-logico")
+    public ResponseEntity<Void> eliminarLogico(@PathVariable Long id) {
+        productoService.eliminarLogico(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/{id}")
     public ResponseEntity<ProductoDTO> actualizar(@PathVariable Long id, @RequestBody ProductoDTO dto) {
         return ResponseEntity.ok(productoService.actualizar(

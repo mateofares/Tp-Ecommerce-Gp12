@@ -9,6 +9,7 @@ public interface IDescuentoService {
     DescuentoDTO createDescuento(DescuentoDTO descuentoDTO);
     DescuentoDTO updateDescuento(Long id, DescuentoDTO descuentoDTO);
     void deleteDescuento(Long id);
+    void eliminarLogico(Long id);
     DescuentoDTO getDescuentoPorCodigo(String codigoDescuento);
     Double calcularDescuento(Double monto, Long descuentoId);
     Double calcularPrecioFinal(Double monto, Long descuentoId);
