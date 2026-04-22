@@ -15,6 +15,7 @@ import java.util.List;
 public class OrdenDTO {
     private Long id;
     private Long compradorId;
+    private Long direccionId;
     private List<ItemOrdenDTO> items;
     private EstadoOrden estado;
     private double total;

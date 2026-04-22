@@ -22,7 +22,7 @@ public class Factura {
     @Column(name = "factura_id")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "orden_id", nullable = false, unique = true)
     private Orden orden;
 

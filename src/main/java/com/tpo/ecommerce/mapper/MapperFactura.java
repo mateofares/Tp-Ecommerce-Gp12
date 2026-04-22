@@ -22,6 +22,7 @@ public class MapperFactura {
                 factura.getDetallesItems(),
                 factura.getFechaFactura(),
                 factura.getTotalFacturado(),
+                factura.getUrlPdf(),
                 factura.getDescripcionImpositiva(),
                 factura.getActiva()
         );

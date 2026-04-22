@@ -7,8 +7,8 @@ import com.tpo.ecommerce.dto.EnvioDTO;
 import com.tpo.ecommerce.repository.EnvioRepository;
 import com.tpo.ecommerce.repository.OrdenRepository;
 import com.tpo.ecommerce.mapper.MapperEnvio;
-import com.tpo.ecommerce.exception.NotFoundException;
-import com.tpo.ecommerce.exception.BadRequestException;
+import com.tpo.ecommerce.exceptions.NotFoundException;
+import com.tpo.ecommerce.exceptions.BadRequestException;
 import org.springframework.stereotype.Service;
 import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
@@ -28,7 +28,6 @@ public class EnvioService implements IEnvioService {
         
         Orden orden = ordenRepository.findById(ordenId)
             .orElseThrow(() -> new NotFoundException("Orden no encontrada con id: " + ordenId));
-        // Por qué validar primero?
         // Si la orden no existe, no puedes crear un envío huérfano
         
         

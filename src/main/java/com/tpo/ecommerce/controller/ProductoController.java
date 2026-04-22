@@ -7,7 +7,6 @@ import com.tpo.ecommerce.enums.Estado;
 import com.tpo.ecommerce.enums.Marca;
 import com.tpo.ecommerce.enums.Talle;
 import com.tpo.ecommerce.service.IProductoService;
-import com.tpo.ecommerce.service.ProductoService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +23,7 @@ public class ProductoController {
     public ResponseEntity<ProductoDTO> crear(@RequestBody ProductoDTO dto) {
         return ResponseEntity.ok(productoService.crear(dto));
     }
-    
+
     @GetMapping
     public ResponseEntity<List<ProductoDTO>> getProductos(
             @RequestParam(required = false) Long id,
@@ -42,13 +41,13 @@ public class ProductoController {
                 id, usuarioId, titulo, descripcion, precio, categoria, marca, talle, color, estado
         ));
     }
-    
+
     @DeleteMapping
     public ResponseEntity<Void> deleteProducto(@RequestParam Long id) {
         productoService.deleteProducto(id);
         return ResponseEntity.noContent().build();
     }
-    
+
     @PatchMapping("/{id}")
     public ResponseEntity<ProductoDTO> actualizar(@PathVariable Long id, @RequestBody ProductoDTO dto) {
         return ResponseEntity.ok(productoService.actualizar(
@@ -64,5 +63,21 @@ public class ProductoController {
                 dto.getImagenUrl()
         ));
     }
-    
-}   
+
+    @PatchMapping("/{productoId}/descuento/{descuentoId}")
+    public ResponseEntity<ProductoDTO> aplicarDescuento(
+            @PathVariable Long productoId,
+            @PathVariable Long descuentoId,
+            @RequestParam Long vendedorId
+    ) {
+        return ResponseEntity.ok(productoService.aplicarDescuento(productoId, descuentoId, vendedorId));
+    }
+
+    @DeleteMapping("/{productoId}/descuento")
+    public ResponseEntity<ProductoDTO> removerDescuento(
+            @PathVariable Long productoId,
+            @RequestParam Long vendedorId
+    ) {
+        return ResponseEntity.ok(productoService.removerDescuento(productoId, vendedorId));
+    }
+}

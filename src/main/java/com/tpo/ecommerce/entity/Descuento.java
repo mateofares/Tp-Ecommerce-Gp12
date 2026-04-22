@@ -38,20 +38,12 @@ public class Descuento {
     @Column(name = "valido_hasta", nullable = false)
     private LocalDate validoHasta;
 
-    @Column(name = "maximo_de_usos", nullable = false)
-    private Integer maximoDeUsos;
-
-    @Column(name = "usos_actuales", nullable = false)
-    private Integer usosActuales;
-
-    public Descuento(String codigoDescuento, TipoDescuento tipo, Double valor, LocalDate validoDesde,
-                     LocalDate validoHasta, Integer maximoDeUsos) {
+    public Descuento(String codigoDescuento, TipoDescuento tipo, Double valor,
+                     LocalDate validoDesde, LocalDate validoHasta) {
         this.codigoDescuento = codigoDescuento;
         this.tipo = tipo;
         this.valor = valor;
         this.validoDesde = validoDesde;
         this.validoHasta = validoHasta;
-        this.maximoDeUsos = maximoDeUsos;
-        this.usosActuales = 0;
     }
 }

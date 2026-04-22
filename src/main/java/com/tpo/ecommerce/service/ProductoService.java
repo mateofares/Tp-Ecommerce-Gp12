@@ -7,10 +7,16 @@ import com.tpo.ecommerce.enums.Color;
 import com.tpo.ecommerce.enums.Estado;
 import com.tpo.ecommerce.enums.Marca;
 import com.tpo.ecommerce.enums.Talle;
+import com.tpo.ecommerce.entity.Descuento;
 import com.tpo.ecommerce.exceptions.BadRequestException;
 import com.tpo.ecommerce.exceptions.NotFoundException;
+import com.tpo.ecommerce.exceptions.UnauthorizedException;
 import com.tpo.ecommerce.mapper.MapperProducto;
+import com.tpo.ecommerce.repository.DescuentoRepository;
 import com.tpo.ecommerce.repository.ProductoRepository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -21,6 +27,7 @@ import java.util.List;
 @Service
 public class ProductoService implements IProductoService {
     private final ProductoRepository productoRepository;
+    private final DescuentoRepository descuentoRepository;
     private final MapperProducto mapperProducto;
 
     @Override
@@ -81,6 +88,42 @@ public class ProductoService implements IProductoService {
     @Override
     public void deleteProducto(Long id) {
         productoRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public ProductoDTO aplicarDescuento(Long productoId, Long descuentoId, Long vendedorId) {
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new NotFoundException("Producto no encontrado"));
+
+        if (producto.getUsuario() == null || !producto.getUsuario().getId().equals(vendedorId)) {
+            throw new UnauthorizedException("Solo el vendedor del producto puede aplicar un descuento");
+        }
+
+        Descuento descuento = descuentoRepository.findById(descuentoId)
+                .orElseThrow(() -> new NotFoundException("Descuento no encontrado"));
+
+        LocalDate hoy = LocalDate.now();
+        if (hoy.isBefore(descuento.getValidoDesde()) || hoy.isAfter(descuento.getValidoHasta())) {
+            throw new BadRequestException("El descuento no está vigente");
+        }
+
+        producto.setDescuento(descuento);
+        return mapperProducto.toDto(productoRepository.save(producto));
+    }
+
+    @Override
+    @Transactional
+    public ProductoDTO removerDescuento(Long productoId, Long vendedorId) {
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new NotFoundException("Producto no encontrado"));
+
+        if (producto.getUsuario() == null || !producto.getUsuario().getId().equals(vendedorId)) {
+            throw new UnauthorizedException("Solo el vendedor del producto puede remover el descuento");
+        }
+
+        producto.setDescuento(null);
+        return mapperProducto.toDto(productoRepository.save(producto));
     }
 
     private void validarData(ProductoDTO dto) {

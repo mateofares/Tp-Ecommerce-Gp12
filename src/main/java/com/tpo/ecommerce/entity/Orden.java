@@ -28,20 +28,20 @@ public class Orden {
     @JoinColumn(name = "comprador_id")
     private Usuario comprador;
 
-    @ManyToOne(fetch = FetchType.LAZY)  // ← UNA orden usa UNA dirección
+    @ManyToOne()  // ← UNA orden usa UNA dirección
     @JoinColumn(name = "direccion_id", nullable = false)  // ← la FK es 'direccion_id'
     private Direccion direccion;  // ← La dirección donde se envía
 
     @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemOrden> items = new ArrayList<>();
 
-    @OneToOne(mappedBy = "orden", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "orden")
     private Factura factura;
 
-    @OneToOne(mappedBy = "orden", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "orden")
     private Envio envio;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "descuento_id")
     private com.tpo.ecommerce.entity.Descuento descuento;
 

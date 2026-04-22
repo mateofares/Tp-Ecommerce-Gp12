@@ -19,7 +19,7 @@ public class ItemFactura {
     @Column(name = "item_factura_id")
     private Long id;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "factura_id", nullable = false)
     private Factura factura;
 

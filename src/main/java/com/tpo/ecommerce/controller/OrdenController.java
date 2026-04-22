@@ -2,7 +2,6 @@ package com.tpo.ecommerce.controller;
 
 import com.tpo.ecommerce.dto.OrdenDTO;
 import com.tpo.ecommerce.service.IOrdenService;
-import com.tpo.ecommerce.service.OrdenService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,12 +34,12 @@ public class OrdenController {
             @PathVariable Long ordenId,
             @PathVariable Long descuentoId
     ) {
-        return ((OrdenService) ordenService).aplicarDescuentoAOrden(ordenId, descuentoId);
+        return ordenService.aplicarDescuentoAOrden(ordenId, descuentoId);
     }
 
     @DeleteMapping("/{ordenId}/descuento")
     public OrdenDTO removerDescuento(@PathVariable Long ordenId) {
-        return ((OrdenService) ordenService).removerDescuentoDeOrden(ordenId);
+        return ordenService.removerDescuentoDeOrden(ordenId);
     }
     
 }

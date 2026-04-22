@@ -28,17 +28,16 @@ public class MapperCarrito {
                 .mapToDouble(item -> (item.getProductoPrecio() != null ? item.getProductoPrecio() : 0D) * item.getCantidad())
                 .sum();
 
-        CarritoDTO dto = new CarritoDTO(
-                carrito.getId(),
-                carrito.getComprador().getId(),
-                items,
-                total
-        );
-        
+        CarritoDTO dto = new CarritoDTO();
+        dto.setId(carrito.getId());
+        dto.setCompradorId(carrito.getComprador().getId());
+        dto.setItems(items);
+        dto.setTotal(total);
+
         if (carrito.getDescuento() != null) {
             dto.setDescuentoId(carrito.getDescuento().getId());
         }
-        
+
         return dto;
     }
 }

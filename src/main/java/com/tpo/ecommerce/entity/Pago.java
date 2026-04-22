@@ -22,7 +22,7 @@ public class Pago {
     @Column(name = "id")
     private Long id;
 
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "orden_id", nullable = false, unique = true)
     private Orden orden;
 
