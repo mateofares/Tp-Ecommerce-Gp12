@@ -9,7 +9,6 @@ import com.tpo.ecommerce.enums.Talle;
 
 import java.util.List;
 
-// ProductoService -> todo lo de productos
 public interface IProductoService {
     ProductoDTO crear(ProductoDTO dto);
 

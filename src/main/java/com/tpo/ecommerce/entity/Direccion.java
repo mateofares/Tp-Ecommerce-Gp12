@@ -1,5 +1,6 @@
 package com.tpo.ecommerce.entity;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.tpo.ecommerce.enums.EstadoRegistro;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,6 +21,7 @@ public class Direccion {
     @Column(name = "direccion_id")
     private Long id;
 
+    
     @ManyToOne()
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;

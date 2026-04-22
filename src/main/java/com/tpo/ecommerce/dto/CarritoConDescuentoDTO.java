@@ -17,14 +17,11 @@ public class CarritoConDescuentoDTO {
     private List<ItemCarritoDTO> items;
     private DescuentoDTO descuento;
     
-    // Cálculos
     private Double subtotal;
     private Double descuentoMonto;
     private Double total;
 
-    /**
-     * Calcula subtotal sin descuento
-     */
+
     public void calcularSubtotal(Double precioUnitario, Integer cantidad) {
         if (this.subtotal == null) {
             this.subtotal = 0.0;

@@ -137,13 +137,24 @@ public class FacturaService implements IFacturaService {
         return String.format("FAC-%d-%05d", anio, numeroSecuencial);
     }
 
-    private String serializarItemsAJson(List<ItemOrden> items) {
+        private String serializarItemsAJson(List<ItemOrden> items) {
         try {
-            return objectMapper.writeValueAsString(items);
+            List<com.tpo.ecommerce.dto.ItemOrdenDTO> dtos = items.stream()
+                    .map(item -> new com.tpo.ecommerce.dto.ItemOrdenDTO(
+                            item.getId(),
+                            item.getProducto().getId(),
+                            item.getProductoTitulo(),
+                            item.getPrecioUnitario(),
+                            item.getCantidad()
+                    ))
+                    .toList();
+
+            return objectMapper.writeValueAsString(dtos);
         } catch (Exception e) {
             throw new BadRequestException("Error al serializar items a JSON: " + e.getMessage());
         }
     }
+    
 
     private String generarPDF(Factura factura) {
         try {

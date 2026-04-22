@@ -33,7 +33,6 @@ public class AuthenticationService {
         validarMailFormato(request.getMail());
         mailDisponible(request.getMail());
 
-        // 2. Creación del usuario
         var user = Usuario.builder()
                 .nombre(request.getNombre().trim())
                 .apellido(request.getApellido().trim())
@@ -44,7 +43,6 @@ public class AuthenticationService {
 
         repository.save(user);
 
-        // 3. Generación del JWT
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)

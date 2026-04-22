@@ -3,6 +3,7 @@ package com.tpo.ecommerce.service;
 import com.tpo.ecommerce.entity.Envio;
 import com.tpo.ecommerce.entity.Orden;
 import com.tpo.ecommerce.enums.EstadoEnvio;
+import com.tpo.ecommerce.enums.EstadoOrden;
 import com.tpo.ecommerce.dto.EnvioDTO;
 import com.tpo.ecommerce.repository.EnvioRepository;
 import com.tpo.ecommerce.repository.OrdenRepository;
@@ -28,10 +29,9 @@ public class EnvioService implements IEnvioService {
         
         Orden orden = ordenRepository.findById(ordenId)
             .orElseThrow(() -> new NotFoundException("Orden no encontrada con id: " + ordenId));
-        // Si la orden no existe, no puedes crear un envío huérfano
         
         
-        if (!orden.getEstado().equals("PAGADA")) {
+        if (orden.getEstado()!=EstadoOrden.PAGADA) {
             throw new BadRequestException("La orden debe estar pagada para registrar envío. Estado actual: " + orden.getEstado());
         }
         
