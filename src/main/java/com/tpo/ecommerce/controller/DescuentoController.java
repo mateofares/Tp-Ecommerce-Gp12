@@ -49,6 +49,12 @@ public class DescuentoController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/eliminar-logico")
+    public ResponseEntity<Void> eliminarLogico(@PathVariable Long id) {
+        descuentoService.eliminarLogico(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/{id}/calcular")
     public ResponseEntity<Double> calcularDescuento(
             @PathVariable Long id,

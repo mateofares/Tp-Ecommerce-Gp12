@@ -1,7 +1,8 @@
 package com.tpo.ecommerce.service;
 
-import com.tpo.ecommerce.dto.UsuarioDTO;
+import com.tpo.ecommerce.dto.UsuarioResponseDTO;
 import com.tpo.ecommerce.entity.Usuario;
+import com.tpo.ecommerce.enums.EstadoRegistro;
 import com.tpo.ecommerce.enums.UserRol;
 import com.tpo.ecommerce.exceptions.BadRequestException;
 import com.tpo.ecommerce.exceptions.DuplicateResourceException;
@@ -24,8 +25,9 @@ public class UsuarioService implements IUsuarioService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public List<UsuarioDTO> getUsuarios(Long id, UserRol userRol, String nombre, String mail, String apellido) {
+    public List<UsuarioResponseDTO> getUsuarios(Long id, UserRol userRol, String nombre, String mail, String apellido) {
         List<Usuario> usuarios = usuarioRepository.findAll();
+        usuarios = usuarios.stream().filter(this::estaActivo).toList();
 
         if(id != null) usuarios = usuarios.stream().filter(usuario -> usuario.getId().equals(id)).toList();
         if (userRol != null )usuarios = usuarios.stream().filter(usuario -> usuario.getUserRol() == userRol).toList();
@@ -33,7 +35,7 @@ public class UsuarioService implements IUsuarioService {
         if (mail != null) usuarios = usuarios.stream().filter(usuario -> usuario.getMail().equalsIgnoreCase(mail)).toList();
         if (apellido != null) usuarios = usuarios.stream().filter(usuario -> usuario.getApellido().equalsIgnoreCase(apellido)).toList();
 
-        return usuarios.stream().map(mapperUsuario::toDto).toList();
+        return usuarios.stream().map(mapperUsuario::toResponseDto).toList();
     }
 
     @Override
@@ -45,9 +47,20 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
-    public UsuarioDTO updateUsuario(Long id, UserRol userRol, String nombre, String mail, String apellido, String contrasenia) {
+    public void eliminarLogico(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado por id"));
+        usuario.setEstadoRegistro(EstadoRegistro.ELIMINADO);
+        usuarioRepository.save(usuario);
+    }
+
+    @Override
+    public UsuarioResponseDTO updateUsuario(Long id, UserRol userRol, String nombre, String mail, String apellido, String contrasenia) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado por id"));
+        if (!estaActivo(usuario)) {
+            throw new NotFoundException("Usuario no encontrado por id");
+        }
 
         if (userRol != null) usuario.setUserRol(userRol);
         if (nombre != null) usuario.setNombre(nombre);
@@ -63,7 +76,7 @@ public class UsuarioService implements IUsuarioService {
             usuario.setContrasenia(passwordEncoder.encode(contrasenia));
         }
 
-        return mapperUsuario.toDto(usuarioRepository.save(usuario));
+        return mapperUsuario.toResponseDto(usuarioRepository.save(usuario));
     }
 
     // --- VALIDACIONES SOLO PARA UPDATE ---
@@ -77,9 +90,16 @@ public class UsuarioService implements IUsuarioService {
 
     private void mailDisponibleParaUpdate(String mail, Long idUsuarioActual) {
         usuarioRepository.findByMail(mail).ifPresent(usuarioExistente -> {
+            if (!estaActivo(usuarioExistente)) {
+                return;
+            }
             if (!usuarioExistente.getId().equals(idUsuarioActual)) {
                 throw new DuplicateResourceException("Usuario", "mail", mail);
             }
         });
+    }
+
+    private boolean estaActivo(Usuario usuario) {
+        return usuario.getEstadoRegistro() == null || usuario.getEstadoRegistro() == EstadoRegistro.ACTIVO;
     }
 }

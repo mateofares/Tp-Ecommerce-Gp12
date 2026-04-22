@@ -2,6 +2,7 @@ package com.tpo.ecommerce.service;
 
 import com.tpo.ecommerce.dto.DescuentoDTO;
 import com.tpo.ecommerce.entity.Descuento;
+import com.tpo.ecommerce.enums.EstadoRegistro;
 import com.tpo.ecommerce.enums.TipoDescuento;
 import com.tpo.ecommerce.exceptions.BadRequestException;
 import com.tpo.ecommerce.exceptions.DuplicateResourceException;
@@ -23,19 +24,21 @@ public class DescuentoService implements IDescuentoService {
 
     @Override
     public List<DescuentoDTO> getDescuentos(Long id, String codigoDescuento, String tipo) {
-        List<Descuento> descuentos = descuentoRepository.findAll();
+        List<Descuento> descuentos = descuentoRepository.findAll().stream()
+                .filter(this::estaActivo)
+                .toList();
 
         if (id != null) {
             descuentos = descuentos.stream()
                     .filter(descuento -> descuento.getId().equals(id))
                     .toList();
         }
-        if (codigoDescuento != null && !codigoDescuento.isEmpty()) {
+        if (StringUtils.hasText(codigoDescuento)) {
             descuentos = descuentos.stream()
                     .filter(descuento -> descuento.getCodigoDescuento().equalsIgnoreCase(codigoDescuento))
                     .toList();
         }
-        if (tipo != null && !tipo.isEmpty()) {
+        if (StringUtils.hasText(tipo)) {
             descuentos = descuentos.stream()
                     .filter(descuento -> descuento.getTipo().name().equalsIgnoreCase(tipo))
                     .toList();
@@ -65,8 +68,7 @@ public class DescuentoService implements IDescuentoService {
 
     @Override
     public DescuentoDTO updateDescuento(Long id, DescuentoDTO descuentoDTO) {
-        Descuento descuento = descuentoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Descuento no encontrado con ID: " + id));
+        Descuento descuento = obtenerDescuentoActivoPorId(id);
 
         if (StringUtils.hasText(descuentoDTO.getCodigoDescuento())) {
             validarCodigoUnico(descuentoDTO.getCodigoDescuento(), id);
@@ -106,17 +108,27 @@ public class DescuentoService implements IDescuentoService {
     }
 
     @Override
+    public void eliminarLogico(Long id) {
+        Descuento descuento = descuentoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Descuento no encontrado con ID: " + id));
+        descuento.setEstadoRegistro(EstadoRegistro.ELIMINADO);
+        descuentoRepository.save(descuento);
+    }
+
+    @Override
     public DescuentoDTO getDescuentoPorCodigo(String codigoDescuento) {
         Descuento descuento = descuentoRepository.findByCodigoDescuento(codigoDescuento)
-                .orElseThrow(() -> new NotFoundException("Descuento no encontrado con código: " + codigoDescuento));
+                .orElseThrow(() -> new NotFoundException("Descuento no encontrado con codigo: " + codigoDescuento));
+        if (!estaActivo(descuento)) {
+            throw new NotFoundException("Descuento no encontrado con codigo: " + codigoDescuento);
+        }
         validarDescuentoActivo(descuento);
         return mapperDescuento.toDto(descuento);
     }
 
     @Override
     public Double calcularDescuento(Double monto, Long descuentoId) {
-        Descuento descuento = descuentoRepository.findById(descuentoId)
-                .orElseThrow(() -> new NotFoundException("Descuento no encontrado con ID: " + descuentoId));
+        Descuento descuento = obtenerDescuentoActivoPorId(descuentoId);
         validarDescuentoActivo(descuento);
         return aplicarCalculo(monto, descuento);
     }
@@ -128,16 +140,14 @@ public class DescuentoService implements IDescuentoService {
 
     @Override
     public Double calcularDescuentoSinValidar(Double monto, Long descuentoId) {
-        Descuento descuento = descuentoRepository.findById(descuentoId)
-                .orElseThrow(() -> new NotFoundException("Descuento no encontrado con ID: " + descuentoId));
+        Descuento descuento = obtenerDescuentoActivoPorId(descuentoId);
         return aplicarCalculo(monto, descuento);
     }
 
     @Override
     public boolean validarDescuentoAplicable(Long descuentoId) {
         try {
-            Descuento descuento = descuentoRepository.findById(descuentoId)
-                    .orElseThrow(() -> new NotFoundException("Descuento no encontrado con ID: " + descuentoId));
+            Descuento descuento = obtenerDescuentoActivoPorId(descuentoId);
             validarDescuentoActivo(descuento);
             return true;
         } catch (BadRequestException | NotFoundException e) {
@@ -154,7 +164,7 @@ public class DescuentoService implements IDescuentoService {
 
     private void validarDatos(DescuentoDTO dto) {
         if (!StringUtils.hasText(dto.getCodigoDescuento())) {
-            throw new BadRequestException("El código del descuento es requerido");
+            throw new BadRequestException("El codigo del descuento es requerido");
         }
         if (dto.getTipo() == null) {
             throw new BadRequestException("El tipo de descuento es requerido");
@@ -175,7 +185,7 @@ public class DescuentoService implements IDescuentoService {
 
     private void validarCodigoUnico(String codigo, Long idExcluir) {
         var existente = descuentoRepository.findByCodigoDescuento(codigo);
-        if (existente.isPresent() && !existente.get().getId().equals(idExcluir)) {
+        if (existente.isPresent() && estaActivo(existente.get()) && !existente.get().getId().equals(idExcluir)) {
             throw new DuplicateResourceException("Descuento", "codigoDescuento", codigo);
         }
     }
@@ -189,10 +199,23 @@ public class DescuentoService implements IDescuentoService {
     private void validarDescuentoActivo(Descuento descuento) {
         LocalDate hoy = LocalDate.now();
         if (hoy.isBefore(descuento.getValidoDesde())) {
-            throw new BadRequestException("El descuento aún no es válido. Válido desde: " + descuento.getValidoDesde());
+            throw new BadRequestException("El descuento aun no es valido. Valido desde: " + descuento.getValidoDesde());
         }
         if (hoy.isAfter(descuento.getValidoHasta())) {
-            throw new BadRequestException("El descuento ha expirado. Válido hasta: " + descuento.getValidoHasta());
+            throw new BadRequestException("El descuento ha expirado. Valido hasta: " + descuento.getValidoHasta());
         }
+    }
+
+    private Descuento obtenerDescuentoActivoPorId(Long id) {
+        Descuento descuento = descuentoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Descuento no encontrado con ID: " + id));
+        if (!estaActivo(descuento)) {
+            throw new NotFoundException("Descuento no encontrado con ID: " + id);
+        }
+        return descuento;
+    }
+
+    private boolean estaActivo(Descuento descuento) {
+        return descuento.getEstadoRegistro() == null || descuento.getEstadoRegistro() == EstadoRegistro.ACTIVO;
     }
 }

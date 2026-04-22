@@ -11,8 +11,10 @@ import com.tpo.ecommerce.dto.AuthenticationRequest;
 import com.tpo.ecommerce.dto.AuthenticationResponse;
 import com.tpo.ecommerce.dto.RegisterRequest;
 import com.tpo.ecommerce.entity.Usuario;
+import com.tpo.ecommerce.enums.EstadoRegistro;
 import com.tpo.ecommerce.exceptions.BadRequestException;
 import com.tpo.ecommerce.exceptions.DuplicateResourceException;
+import com.tpo.ecommerce.exceptions.NotFoundException;
 import com.tpo.ecommerce.repository.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -58,7 +60,8 @@ public class AuthenticationService {
         );
         
         var user = repository.findByMail(request.getMail())
-                .orElseThrow();
+                .filter(this::estaActivo)
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
         
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
@@ -82,8 +85,12 @@ public class AuthenticationService {
     }
 
     private void mailDisponible(String mail) {
-        if (repository.findByMail(mail).isPresent()) {
+        if (repository.findByMail(mail).filter(this::estaActivo).isPresent()) {
             throw new DuplicateResourceException("Usuario", "mail", mail);
         }
+    }
+
+    private boolean estaActivo(Usuario usuario) {
+        return usuario.getEstadoRegistro() == null || usuario.getEstadoRegistro() == EstadoRegistro.ACTIVO;
     }
 }

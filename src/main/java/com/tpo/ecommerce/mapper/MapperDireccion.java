@@ -2,6 +2,7 @@ package com.tpo.ecommerce.mapper;
 import com.tpo.ecommerce.dto.DireccionDTO;
 import com.tpo.ecommerce.entity.Direccion;
 import com.tpo.ecommerce.entity.Usuario;
+import com.tpo.ecommerce.enums.EstadoRegistro;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -50,7 +51,9 @@ public class MapperDireccion {
         direccion.setTipoDireccion(dto.getTipoDireccion());
         direccion.setPredeterminada(dto.getPredeterminada() != null ? dto.getPredeterminada() : false);
         direccion.setNotas(dto.getNotas());
-        direccion.setActiva(dto.getActiva() != null ? dto.getActiva() : true);
+        boolean activa = dto.getActiva() == null || dto.getActiva();
+        direccion.setActiva(activa);
+        direccion.setEstadoRegistro(activa ? EstadoRegistro.ACTIVO : EstadoRegistro.ELIMINADO);
         direccion.setFechaCreacion(dto.getFechaCreacion() != null ? dto.getFechaCreacion() : LocalDateTime.now());
 
         return direccion;

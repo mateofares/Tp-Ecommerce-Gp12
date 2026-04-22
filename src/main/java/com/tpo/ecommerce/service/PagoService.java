@@ -11,6 +11,7 @@ import com.tpo.ecommerce.exceptions.BadRequestException;
 import com.tpo.ecommerce.exceptions.DuplicateResourceException;
 import com.tpo.ecommerce.exceptions.NotFoundException;
 import com.tpo.ecommerce.mapper.MapperPago;
+import com.tpo.ecommerce.repository.FacturaRepository;
 import com.tpo.ecommerce.repository.OrdenRepository;
 import com.tpo.ecommerce.repository.PagoRepository;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,8 @@ public class PagoService implements IPagoService {
 
     private final PagoRepository pagoRepository;
     private final OrdenRepository ordenRepository;
+    private final FacturaRepository facturaRepository;
+    private final IFacturaService facturaService;
     private final MapperPago mapperPago;
 
     @Override
@@ -51,7 +54,9 @@ public class PagoService implements IPagoService {
         pago.setReferenciaMaxima(generarReferenciaMaxima(ordenId));
         pago.setFechaPago(LocalDateTime.now());
 
-        return mapperPago.toDto(pagoRepository.save(pago));
+        Pago pagoGuardado = pagoRepository.save(pago);
+        generarFacturaSiCorresponde(pagoGuardado);
+        return mapperPago.toDto(pagoGuardado);
     }
 
     @Override
@@ -108,7 +113,9 @@ public class PagoService implements IPagoService {
         pago.setFechaPago(LocalDateTime.now());
         sincronizarEstadoOrden(pago.getOrden(), EstadoPago.APROBADO);
 
-        return mapperPago.toDto(pagoRepository.save(pago));
+        Pago pagoGuardado = pagoRepository.save(pago);
+        generarFacturaSiCorresponde(pagoGuardado);
+        return mapperPago.toDto(pagoGuardado);
     }
 
     @Override
@@ -164,5 +171,16 @@ public class PagoService implements IPagoService {
 
     private String generarReferenciaMaxima(Long ordenId) {
         return "ORD-" + ordenId + "-" + System.currentTimeMillis();
+    }
+
+    private void generarFacturaSiCorresponde(Pago pago) {
+        if (pago.getEstado() != EstadoPago.APROBADO || pago.getOrden() == null || pago.getOrden().getId() == null) {
+            return;
+        }
+
+        Long ordenId = pago.getOrden().getId();
+        if (facturaRepository.findByOrdenId(ordenId).isEmpty()) {
+            facturaService.crearFacturaAutomatica(ordenId);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.tpo.ecommerce.mapper;
 
 import com.tpo.ecommerce.dto.UsuarioDTO;
+import com.tpo.ecommerce.dto.UsuarioResponseDTO;
 import com.tpo.ecommerce.entity.Usuario;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,16 @@ public class MapperUsuario {
                 usuario.getNombre(),
                 usuario.getMail(),
                 usuario.getContrasenia(),
+                usuario.getApellido()
+        );
+    }
+
+    public UsuarioResponseDTO toResponseDto(Usuario usuario) {
+        return new UsuarioResponseDTO(
+                usuario.getId(),
+                usuario.getUserRol(),
+                usuario.getNombre(),
+                usuario.getMail(),
                 usuario.getApellido()
         );
     }

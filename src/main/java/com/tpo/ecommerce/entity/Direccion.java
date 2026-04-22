@@ -1,5 +1,6 @@
 package com.tpo.ecommerce.entity;
 
+import com.tpo.ecommerce.enums.EstadoRegistro;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -50,6 +51,10 @@ public class Direccion {
     @Column(nullable = false)
     private Boolean activa;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado_registro")
+    private EstadoRegistro estadoRegistro = EstadoRegistro.ACTIVO;
+
     private String notas;
 
     @OneToMany(mappedBy = "direccion", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -69,5 +74,6 @@ public class Direccion {
         this.notas = notas;
         this.fechaCreacion = LocalDateTime.now();
         this.activa = true;
+        this.estadoRegistro = EstadoRegistro.ACTIVO;
     }
 }
