@@ -19,13 +19,12 @@ public class MapperCarrito {
                         item.getId(),
                         item.getProducto().getId(),
                         item.getProducto().getTitulo(),
-                        item.getProducto().getPrecio(),
-                        item.getCantidad()
+                        item.getProducto().getPrecio()
                 ))
                 .toList();
 
         double total = items.stream()
-                .mapToDouble(item -> (item.getProductoPrecio() != null ? item.getProductoPrecio() : 0D) * item.getCantidad())
+                .mapToDouble(item -> item.getProductoPrecio() != null ? item.getProductoPrecio() : 0D)
                 .sum();
 
         CarritoDTO dto = new CarritoDTO();

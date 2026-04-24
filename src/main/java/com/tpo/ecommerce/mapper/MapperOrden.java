@@ -19,8 +19,7 @@ public class MapperOrden {
                         item.getId(),
                         item.getProducto().getId(),
                         item.getProductoTitulo(),
-                        item.getPrecioUnitario(),
-                        item.getCantidad()
+                        item.getPrecioUnitario()
                 ))
                 .toList();
 

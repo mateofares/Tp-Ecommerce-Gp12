@@ -1,6 +1,10 @@
 package com.tpo.ecommerce.controller;
 
+import com.tpo.ecommerce.config.AuthorizationHelper;
 import com.tpo.ecommerce.dto.OrdenDTO;
+import com.tpo.ecommerce.entity.Orden;
+import com.tpo.ecommerce.exceptions.NotFoundException;
+import com.tpo.ecommerce.repository.OrdenRepository;
 import com.tpo.ecommerce.service.IOrdenService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -11,21 +15,26 @@ import java.util.List;
 @RestController
 @RequestMapping("/ordenes")
 public class OrdenController {
-    
-    private IOrdenService ordenService;
-    
+
+    private final IOrdenService ordenService;
+    private final OrdenRepository ordenRepository;
+    private final AuthorizationHelper authorizationHelper;
+
     @PostMapping
     public OrdenDTO comprar(@RequestBody OrdenDTO dto) {
+        authorizationHelper.authorize(dto.getCompradorId());
         return ordenService.comprar(dto);
     }
-    
+
     @GetMapping("/{compradorId}")
     public List<OrdenDTO> misCompras(@PathVariable Long compradorId) {
+        authorizationHelper.authorize(compradorId);
         return ordenService.misCompras(compradorId);
     }
-    
+
     @GetMapping("/ventas/{vendedorId}")
     public List<OrdenDTO> misVentas(@PathVariable Long vendedorId) {
+        authorizationHelper.authorize(vendedorId);
         return ordenService.misVentas(vendedorId);
     }
 
@@ -34,12 +43,19 @@ public class OrdenController {
             @PathVariable Long ordenId,
             @PathVariable Long descuentoId
     ) {
+        authorizationHelper.authorize(getCompradorId(ordenId));
         return ordenService.aplicarDescuentoAOrden(ordenId, descuentoId);
     }
 
     @DeleteMapping("/{ordenId}/descuento")
     public OrdenDTO removerDescuento(@PathVariable Long ordenId) {
+        authorizationHelper.authorize(getCompradorId(ordenId));
         return ordenService.removerDescuentoDeOrden(ordenId);
     }
-    
+
+    private Long getCompradorId(Long ordenId) {
+        Orden orden = ordenRepository.findById(ordenId)
+                .orElseThrow(() -> new NotFoundException("Orden no encontrada"));
+        return orden.getComprador().getId();
+    }
 }

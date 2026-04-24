@@ -15,13 +15,4 @@ public class ItemFacturaDTO {
     private Long facturaId;
     private String productoTitulo;
     private Double precioUnitario;
-    private Integer cantidad;
-
-    public ItemFacturaDTO(Long facturaId, String productoTitulo,
-                          Double precioUnitario, Integer cantidad) {
-        this.facturaId = facturaId;
-        this.productoTitulo = productoTitulo;
-        this.precioUnitario = precioUnitario;
-        this.cantidad = cantidad;
-    }
 }

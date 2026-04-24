@@ -3,6 +3,7 @@ package com.tpo.ecommerce.entity;
 import com.tpo.ecommerce.enums.Categorias;
 import com.tpo.ecommerce.enums.Color;
 import com.tpo.ecommerce.enums.Estado;
+import com.tpo.ecommerce.enums.EstadoProducto;
 import com.tpo.ecommerce.enums.EstadoRegistro;
 import com.tpo.ecommerce.enums.Marca;
 import com.tpo.ecommerce.enums.Talle;
@@ -60,6 +61,10 @@ public class Producto {
     @Enumerated(EnumType.STRING)
     @Column(name = "estado_registro")
     private EstadoRegistro estadoRegistro = EstadoRegistro.ACTIVO;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado_producto", nullable = false)
+    private EstadoProducto estadoProducto = EstadoProducto.DISPONIBLE;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")

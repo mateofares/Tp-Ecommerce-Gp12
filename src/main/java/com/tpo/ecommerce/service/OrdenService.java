@@ -7,6 +7,7 @@ import com.tpo.ecommerce.entity.Orden;
 import com.tpo.ecommerce.entity.Producto;
 import com.tpo.ecommerce.entity.Usuario;
 import com.tpo.ecommerce.enums.EstadoOrden;
+import com.tpo.ecommerce.enums.EstadoProducto;
 import com.tpo.ecommerce.exceptions.BadRequestException;
 import com.tpo.ecommerce.exceptions.DuplicateResourceException;
 import com.tpo.ecommerce.exceptions.NotFoundException;
@@ -77,12 +78,11 @@ public class OrdenService implements IOrdenService {
             if (itemDTO.getProductoId() == null) {
                 throw new BadRequestException("Cada item debe indicar productoId");
             }
-            if (itemDTO.getCantidad() == null || itemDTO.getCantidad() <= 0) {
-                throw new BadRequestException("La cantidad debe ser mayor a cero");
-            }
-
             Producto producto = productoRepository.findById(itemDTO.getProductoId())
                     .orElseThrow(() -> new NotFoundException("Producto no encontrado"));
+            if (producto.getEstadoProducto() != EstadoProducto.DISPONIBLE) {
+                throw new BadRequestException("El producto '" + producto.getTitulo() + "' ya no está disponible");
+            }
 
             double precioUnitario = MapperProducto.calcularPrecioEfectivo(producto.getPrecio(), producto.getDescuento());
 
@@ -91,10 +91,9 @@ public class OrdenService implements IOrdenService {
             itemOrden.setProducto(producto);
             itemOrden.setProductoTitulo(producto.getTitulo());
             itemOrden.setPrecioUnitario(precioUnitario);
-            itemOrden.setCantidad(itemDTO.getCantidad());
             itemsOrden.add(itemOrden);
 
-            total += precioUnitario * itemDTO.getCantidad();
+            total += precioUnitario;
         }
 
         orden.setItems(itemsOrden);

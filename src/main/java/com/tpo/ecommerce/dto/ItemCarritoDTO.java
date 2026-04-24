@@ -14,5 +14,4 @@ public class ItemCarritoDTO {
     private Long productoId;
     private String productoTitulo;
     private Double productoPrecio;
-    private Integer cantidad;
 }

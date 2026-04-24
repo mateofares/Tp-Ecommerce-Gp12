@@ -72,8 +72,7 @@ public class FacturaService implements IFacturaService {
             ItemFactura itemFactura = new ItemFactura(
                     factura,
                     itemOrden.getProductoTitulo(),
-                    itemOrden.getPrecioUnitario(),
-                    itemOrden.getCantidad()
+                    itemOrden.getPrecioUnitario()
             );
             itemsFactura.add(itemFactura);
         }
@@ -144,8 +143,7 @@ public class FacturaService implements IFacturaService {
                             item.getId(),
                             item.getProducto().getId(),
                             item.getProductoTitulo(),
-                            item.getPrecioUnitario(),
-                            item.getCantidad()
+                            item.getPrecioUnitario()
                     ))
                     .toList();
 
