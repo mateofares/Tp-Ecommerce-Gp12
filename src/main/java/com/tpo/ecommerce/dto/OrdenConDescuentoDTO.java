@@ -29,11 +29,11 @@ public class OrdenConDescuentoDTO {
     /**
      * Calcula subtotal sin descuento
      */
-    public void calcularSubtotal(Double precioUnitario, Integer cantidad) {
+    public void calcularSubtotal(Double precioUnitario) {
         if (this.subtotal == null) {
             this.subtotal = 0.0;
         }
-        this.subtotal += (precioUnitario * cantidad);
+        this.subtotal += precioUnitario;
     }
 
     /**

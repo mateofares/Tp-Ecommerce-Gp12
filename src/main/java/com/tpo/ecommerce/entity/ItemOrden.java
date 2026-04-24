@@ -32,7 +32,4 @@ public class ItemOrden {
 
     @Column(name = "precio_unitario")
     private Double precioUnitario;
-
-    @Column(name = "cantidad")
-    private Integer cantidad;
 }

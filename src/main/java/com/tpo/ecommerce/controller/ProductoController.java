@@ -1,11 +1,15 @@
 package com.tpo.ecommerce.controller;
 
+import com.tpo.ecommerce.config.AuthorizationHelper;
 import com.tpo.ecommerce.dto.ProductoDTO;
+import com.tpo.ecommerce.entity.Producto;
 import com.tpo.ecommerce.enums.Categorias;
 import com.tpo.ecommerce.enums.Color;
 import com.tpo.ecommerce.enums.Estado;
 import com.tpo.ecommerce.enums.Marca;
 import com.tpo.ecommerce.enums.Talle;
+import com.tpo.ecommerce.exceptions.NotFoundException;
+import com.tpo.ecommerce.repository.ProductoRepository;
 import com.tpo.ecommerce.service.IProductoService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +21,14 @@ import java.util.List;
 @RequestMapping("/productos")
 @AllArgsConstructor
 public class ProductoController {
+
     private final IProductoService productoService;
+    private final ProductoRepository productoRepository;
+    private final AuthorizationHelper authorizationHelper;
 
     @PostMapping
     public ResponseEntity<ProductoDTO> crear(@RequestBody ProductoDTO dto) {
+        authorizationHelper.authorize(dto.getUsuarioId());
         return ResponseEntity.ok(productoService.crear(dto));
     }
 
@@ -44,18 +52,21 @@ public class ProductoController {
 
     @DeleteMapping
     public ResponseEntity<Void> deleteProducto(@RequestParam Long id) {
+        authorizationHelper.authorize(getOwnerUserId(id));
         productoService.deleteProducto(id);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/eliminar-logico")
     public ResponseEntity<Void> eliminarLogico(@PathVariable Long id) {
+        authorizationHelper.authorize(getOwnerUserId(id));
         productoService.eliminarLogico(id);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<ProductoDTO> actualizar(@PathVariable Long id, @RequestBody ProductoDTO dto) {
+        authorizationHelper.authorize(getOwnerUserId(id));
         return ResponseEntity.ok(productoService.actualizar(
                 id,
                 dto.getTitulo(),
@@ -76,6 +87,7 @@ public class ProductoController {
             @PathVariable Long descuentoId,
             @RequestParam Long vendedorId
     ) {
+        authorizationHelper.authorize(vendedorId);
         return ResponseEntity.ok(productoService.aplicarDescuento(productoId, descuentoId, vendedorId));
     }
 
@@ -84,6 +96,16 @@ public class ProductoController {
             @PathVariable Long productoId,
             @RequestParam Long vendedorId
     ) {
+        authorizationHelper.authorize(vendedorId);
         return ResponseEntity.ok(productoService.removerDescuento(productoId, vendedorId));
+    }
+
+    private Long getOwnerUserId(Long productoId) {
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new NotFoundException("Producto no encontrado"));
+        if (producto.getUsuario() == null) {
+            throw new NotFoundException("El producto no tiene propietario asignado");
+        }
+        return producto.getUsuario().getId();
     }
 }

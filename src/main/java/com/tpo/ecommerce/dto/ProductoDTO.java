@@ -3,6 +3,7 @@ package com.tpo.ecommerce.dto;
 import com.tpo.ecommerce.enums.Categorias;
 import com.tpo.ecommerce.enums.Color;
 import com.tpo.ecommerce.enums.Estado;
+import com.tpo.ecommerce.enums.EstadoProducto;
 import com.tpo.ecommerce.enums.Marca;
 import com.tpo.ecommerce.enums.Talle;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class ProductoDTO {
     private Talle talle;
     private Color color;
     private Estado estado;
+    private EstadoProducto estadoProducto;
     private String imagenUrl;
     private Long descuentoId;
     private Double precioConDescuento;

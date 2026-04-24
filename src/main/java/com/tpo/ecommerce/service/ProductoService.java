@@ -5,6 +5,7 @@ import com.tpo.ecommerce.entity.Producto;
 import com.tpo.ecommerce.enums.Categorias;
 import com.tpo.ecommerce.enums.Color;
 import com.tpo.ecommerce.enums.Estado;
+import com.tpo.ecommerce.enums.EstadoProducto;
 import com.tpo.ecommerce.enums.EstadoRegistro;
 import com.tpo.ecommerce.enums.Marca;
 import com.tpo.ecommerce.enums.Talle;
@@ -44,7 +45,10 @@ public class ProductoService implements IProductoService {
         List<Producto> productos = (usuarioId != null)
                 ? productoRepository.findByUsuarioId(usuarioId)
                 : productoRepository.findAll();
-        productos = productos.stream().filter(this::estaActivo).toList();
+        productos = productos.stream()
+                .filter(this::estaActivo)
+                .filter(p -> p.getEstadoProducto() == EstadoProducto.DISPONIBLE)
+                .toList();
 
         if (id != null) productos = productos.stream().filter(p -> p.getId() != null && p.getId().equals(id)).toList();
         if (StringUtils.hasText(titulo)) {

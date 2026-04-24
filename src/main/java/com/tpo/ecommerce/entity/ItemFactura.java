@@ -29,13 +29,9 @@ public class ItemFactura {
     @Column(name = "precio_unitario", nullable = false, updatable = false)
     private Double precioUnitario;
 
-    @Column(nullable = false, updatable = false)
-    private Integer cantidad;
-
-    public ItemFactura(Factura factura, String productoTitulo,  Double precioUnitario, Integer cantidad) {
+    public ItemFactura(Factura factura, String productoTitulo, Double precioUnitario) {
         this.factura = factura;
         this.productoTitulo = productoTitulo;
         this.precioUnitario = precioUnitario;
-        this.cantidad = cantidad;
     }
 }

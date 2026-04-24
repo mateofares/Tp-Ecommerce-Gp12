@@ -22,11 +22,11 @@ public class CarritoConDescuentoDTO {
     private Double total;
 
 
-    public void calcularSubtotal(Double precioUnitario, Integer cantidad) {
+    public void calcularSubtotal(Double precioUnitario) {
         if (this.subtotal == null) {
             this.subtotal = 0.0;
         }
-        this.subtotal += (precioUnitario * cantidad);
+        this.subtotal += precioUnitario;
     }
 
     /**

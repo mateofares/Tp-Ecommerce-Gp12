@@ -5,8 +5,11 @@ import com.tpo.ecommerce.dto.PagoDTO;
 import com.tpo.ecommerce.dto.RealizarPagoDTO;
 import com.tpo.ecommerce.entity.Orden;
 import com.tpo.ecommerce.entity.Pago;
+import com.tpo.ecommerce.entity.Producto;
+import java.util.List;
 import com.tpo.ecommerce.enums.EstadoOrden;
 import com.tpo.ecommerce.enums.EstadoPago;
+import com.tpo.ecommerce.enums.EstadoProducto;
 import com.tpo.ecommerce.exceptions.BadRequestException;
 import com.tpo.ecommerce.exceptions.DuplicateResourceException;
 import com.tpo.ecommerce.exceptions.NotFoundException;
@@ -14,6 +17,7 @@ import com.tpo.ecommerce.mapper.MapperPago;
 import com.tpo.ecommerce.repository.FacturaRepository;
 import com.tpo.ecommerce.repository.OrdenRepository;
 import com.tpo.ecommerce.repository.PagoRepository;
+import com.tpo.ecommerce.repository.ProductoRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +34,7 @@ public class PagoService implements IPagoService {
     private final PagoRepository pagoRepository;
     private final OrdenRepository ordenRepository;
     private final FacturaRepository facturaRepository;
+    private final ProductoRepository productoRepository;
     private final IFacturaService facturaService;
     private final MapperPago mapperPago;
 
@@ -112,6 +117,7 @@ public class PagoService implements IPagoService {
         pago.setEstado(EstadoPago.APROBADO);
         pago.setFechaPago(LocalDateTime.now());
         sincronizarEstadoOrden(pago.getOrden(), EstadoPago.APROBADO);
+        marcarProductosComoVendidos(pago.getOrden());
 
         Pago pagoGuardado = pagoRepository.save(pago);
         generarFacturaSiCorresponde(pagoGuardado);
@@ -171,6 +177,14 @@ public class PagoService implements IPagoService {
 
     private String generarReferenciaMaxima(Long ordenId) {
         return "ORD-" + ordenId + "-" + System.currentTimeMillis();
+    }
+
+    private void marcarProductosComoVendidos(Orden orden) {
+        List<Producto> productos = orden.getItems().stream()
+                .map(item -> item.getProducto())
+                .toList();
+        productos.forEach(p -> p.setEstadoProducto(EstadoProducto.VENDIDO));
+        productoRepository.saveAll(productos);
     }
 
     private void generarFacturaSiCorresponde(Pago pago) {

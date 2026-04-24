@@ -26,6 +26,7 @@ public class MapperProducto {
         dto.setTalle(producto.getTalle());
         dto.setColor(producto.getColor());
         dto.setEstado(producto.getEstado());
+        dto.setEstadoProducto(producto.getEstadoProducto());
         dto.setImagenUrl(producto.getImagenUrl());
 
         Descuento descuento = producto.getDescuento();

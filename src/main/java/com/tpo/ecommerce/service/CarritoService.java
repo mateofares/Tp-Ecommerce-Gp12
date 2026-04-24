@@ -10,6 +10,7 @@ import com.tpo.ecommerce.entity.Orden;
 import com.tpo.ecommerce.entity.Producto;
 import com.tpo.ecommerce.entity.Usuario;
 import com.tpo.ecommerce.enums.EstadoOrden;
+import com.tpo.ecommerce.enums.EstadoProducto;
 import com.tpo.ecommerce.exceptions.BadRequestException;
 import com.tpo.ecommerce.exceptions.DuplicateResourceException;
 import com.tpo.ecommerce.exceptions.NotFoundException;
@@ -58,22 +59,16 @@ public class CarritoService implements ICarritoService {
         Carrito carrito = obtenerOCrearCarrito(dto.getCompradorId());
 
         for (ItemCarritoDTO itemDTO : dto.getItems()) {
-            validarCantidad(itemDTO.getCantidad());
             Producto producto = obtenerProducto(itemDTO.getProductoId());
-            Optional<ItemCarrito> itemExistente = carrito.getItems().stream()
-                    .filter(item -> item.getProducto().getId().equals(producto.getId()))
-                    .findFirst();
-
-            if (itemExistente.isPresent()) {
-                ItemCarrito item = itemExistente.get();
-                item.setCantidad(item.getCantidad() + itemDTO.getCantidad());
-            } else {
-                ItemCarrito item = new ItemCarrito();
-                item.setCarrito(carrito);
-                item.setProducto(producto);
-                item.setCantidad(itemDTO.getCantidad());
-                carrito.getItems().add(item);
+            boolean yaEstaEnCarrito = carrito.getItems().stream()
+                    .anyMatch(item -> item.getProducto().getId().equals(producto.getId()));
+            if (yaEstaEnCarrito) {
+                throw new BadRequestException("El producto '" + producto.getTitulo() + "' ya está en el carrito");
             }
+            ItemCarrito item = new ItemCarrito();
+            item.setCarrito(carrito);
+            item.setProducto(producto);
+            carrito.getItems().add(item);
         }
 
         return mapperCarrito.toDto(carritoRepository.save(carrito));
@@ -91,22 +86,10 @@ public class CarritoService implements ICarritoService {
             if (itemDTO.getProductoId() == null) {
                 throw new BadRequestException("Cada item debe indicar productoId");
             }
-
-            ItemCarrito itemExistente = carrito.getItems().stream()
+            carrito.getItems().stream()
                     .filter(item -> item.getProducto().getId().equals(itemDTO.getProductoId()))
                     .findFirst()
-                    .orElse(null);
-
-            if (itemExistente == null) {
-                continue;
-            }
-
-            Integer cantidad = itemDTO.getCantidad();
-            if (cantidad == null || cantidad <= 0 || cantidad >= itemExistente.getCantidad()) {
-                carrito.getItems().remove(itemExistente);
-            } else {
-                itemExistente.setCantidad(itemExistente.getCantidad() - cantidad);
-            }
+                    .ifPresent(carrito.getItems()::remove);
         }
 
         return mapperCarrito.toDto(carritoRepository.save(carrito));
@@ -172,10 +155,9 @@ public class CarritoService implements ICarritoService {
             itemOrden.setProducto(producto);
             itemOrden.setProductoTitulo(producto.getTitulo());
             itemOrden.setPrecioUnitario(precioUnitario);
-            itemOrden.setCantidad(itemCarrito.getCantidad());
             itemsOrden.add(itemOrden);
 
-            subtotal += precioUnitario * itemCarrito.getCantidad();
+            subtotal += precioUnitario;
         }
 
         orden.setItems(itemsOrden);
@@ -213,8 +195,12 @@ public class CarritoService implements ICarritoService {
         if (productoId == null) {
             throw new BadRequestException("Cada item debe indicar productoId");
         }
-        return productoRepository.findById(productoId)
+        Producto producto = productoRepository.findById(productoId)
                 .orElseThrow(() -> new NotFoundException("Producto no encontrado"));
+        if (producto.getEstadoProducto() != EstadoProducto.DISPONIBLE) {
+            throw new BadRequestException("El producto '" + producto.getTitulo() + "' ya no está disponible");
+        }
+        return producto;
     }
 
     private void validarRequestConItems(CarritoDTO dto) {
@@ -223,12 +209,6 @@ public class CarritoService implements ICarritoService {
         }
         if (dto.getItems() == null || dto.getItems().isEmpty()) {
             throw new BadRequestException("Debe enviar al menos un item");
-        }
-    }
-
-    private void validarCantidad(Integer cantidad) {
-        if (cantidad == null || cantidad <= 0) {
-            throw new BadRequestException("La cantidad debe ser mayor a cero");
         }
     }
 

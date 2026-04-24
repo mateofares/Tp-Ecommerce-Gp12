@@ -14,5 +14,4 @@ public class ItemOrdenDTO {
     private Long productoId;
     private String productoTitulo;
     private Double precioUnitario;
-    private Integer cantidad;
 }

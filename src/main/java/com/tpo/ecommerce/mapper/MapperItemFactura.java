@@ -15,8 +15,7 @@ public class MapperItemFactura {
                 itemFactura.getId(),
                 itemFactura.getFactura() != null ? itemFactura.getFactura().getId() : null,
                 itemFactura.getProductoTitulo(),
-                itemFactura.getPrecioUnitario(),
-                itemFactura.getCantidad()
+                itemFactura.getPrecioUnitario()
         );
     }
 
@@ -27,7 +26,6 @@ public class MapperItemFactura {
         itemFactura.setId(dto.getId());
         itemFactura.setProductoTitulo(dto.getProductoTitulo());
         itemFactura.setPrecioUnitario(dto.getPrecioUnitario());
-        itemFactura.setCantidad(dto.getCantidad());
 
         if (dto.getFacturaId() != null) {
             Factura factura = new Factura();
@@ -45,7 +43,6 @@ public class MapperItemFactura {
         itemFactura.setId(dto.getId());
         itemFactura.setProductoTitulo(dto.getProductoTitulo());
         itemFactura.setPrecioUnitario(dto.getPrecioUnitario());
-        itemFactura.setCantidad(dto.getCantidad());
         itemFactura.setFactura(factura);
 
         return itemFactura;
