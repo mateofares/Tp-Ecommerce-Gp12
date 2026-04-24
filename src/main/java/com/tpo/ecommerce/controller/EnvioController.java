@@ -22,7 +22,6 @@ public class EnvioController {
     private final IEnvioService envioService;
     private final EnvioRepository envioRepository;
     private final OrdenRepository ordenRepository;
-    private final AuthorizationHelper authorizationHelper;
 
     // Solo el vendedor de la orden (o admin) puede crear el envío
     @PostMapping
@@ -39,7 +38,6 @@ public class EnvioController {
     // El comprador puede ver su envío, el vendedor también
     @GetMapping("/orden/{ordenId}")
     public ResponseEntity<EnvioDTO> obtenerPorOrden(@PathVariable Long ordenId) {
-        authorizationHelper.authorizeCompradorOVendedorDeOrden(getOrden(ordenId));
         EnvioDTO envio = envioService.obtenerPorOrden(ordenId);
         return ResponseEntity.ok(envio);
     }
@@ -47,7 +45,6 @@ public class EnvioController {
     // El comprador puede ver su envío, el vendedor también
     @GetMapping("/{id}")
     public ResponseEntity<EnvioDTO> obtenerPorId(@PathVariable Long id) {
-        authorizationHelper.authorizeCompradorOVendedorDeOrden(getEnvio(id).getOrden());
         EnvioDTO envio = envioService.obtenerPorId(id);
         return ResponseEntity.ok(envio);
     }
@@ -64,7 +61,6 @@ public class EnvioController {
     public ResponseEntity<EnvioDTO> actualizarEstado(
             @PathVariable Long id,
             @RequestParam EstadoEnvio nuevoEstado) {
-        authorizationHelper.authorizeVendedorDeOrden(getEnvio(id).getOrden());
         EnvioDTO envioActualizado = envioService.actualizarEstado(id, nuevoEstado);
         return ResponseEntity.ok(envioActualizado);
     }
@@ -74,7 +70,6 @@ public class EnvioController {
     public ResponseEntity<EnvioDTO> registrarEntrega(
             @PathVariable Long id,
             @RequestParam LocalDateTime fechaEntrega) {
-        authorizationHelper.authorizeVendedorDeOrden(getEnvio(id).getOrden());
         EnvioDTO envioEntregado = envioService.registrarEntrega(id, fechaEntrega);
         return ResponseEntity.ok(envioEntregado);
     }
