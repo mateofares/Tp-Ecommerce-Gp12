@@ -60,6 +60,9 @@ public class CarritoService implements ICarritoService {
 
         for (ItemCarritoDTO itemDTO : dto.getItems()) {
             Producto producto = obtenerProducto(itemDTO.getProductoId());
+            if (producto.getUsuario() != null && producto.getUsuario().getId().equals(dto.getCompradorId())) {
+                throw new BadRequestException("No podes agregar tu propio producto al carrito");
+            }
             boolean yaEstaEnCarrito = carrito.getItems().stream()
                     .anyMatch(item -> item.getProducto().getId().equals(producto.getId()));
             if (yaEstaEnCarrito) {

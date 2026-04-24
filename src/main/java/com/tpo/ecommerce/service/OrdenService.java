@@ -83,6 +83,9 @@ public class OrdenService implements IOrdenService {
             if (producto.getEstadoProducto() != EstadoProducto.DISPONIBLE) {
                 throw new BadRequestException("El producto '" + producto.getTitulo() + "' ya no está disponible");
             }
+            if (producto.getUsuario() != null && producto.getUsuario().getId().equals(dto.getCompradorId())) {
+                throw new BadRequestException("No podes comprar tu propio producto");
+            }
 
             double precioUnitario = MapperProducto.calcularPrecioEfectivo(producto.getPrecio(), producto.getDescuento());
 
