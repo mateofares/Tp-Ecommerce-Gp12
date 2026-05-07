@@ -21,15 +21,12 @@ import com.tpo.ecommerce.repository.ProductoRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 
 @Service
 @AllArgsConstructor
 public class PagoService implements IPagoService {
-
-    private static final String METODO_A_DEFINIR = "A_DEFINIR";
 
     private final PagoRepository pagoRepository;
     private final OrdenRepository ordenRepository;
@@ -53,10 +50,8 @@ public class PagoService implements IPagoService {
 
         Pago pago = new Pago();
         pago.setOrden(orden);
-        pago.setMetodo(METODO_A_DEFINIR);
         pago.setEstado(EstadoPago.PENDIENTE);
         pago.setMonto(orden.getTotal());
-        pago.setReferenciaMaxima(generarReferenciaMaxima(ordenId));
         pago.setFechaPago(LocalDateTime.now());
 
         Pago pagoGuardado = pagoRepository.save(pago);
@@ -95,11 +90,8 @@ public class PagoService implements IPagoService {
         if (dto == null) {
             throw new BadRequestException("Debe enviar datos del pago");
         }
-        if (!StringUtils.hasText(dto.getMetodo())) {
+        if (dto.getMetodo() == null) {
             throw new BadRequestException("Debe indicar el metodo de pago");
-        }
-        if (!StringUtils.hasText(dto.getReferenciaMaxima())) {
-            throw new BadRequestException("Debe indicar la referencia de pago");
         }
 
         Pago pago = pagoRepository.findByOrdenId(ordenId)
@@ -112,8 +104,7 @@ public class PagoService implements IPagoService {
             throw new BadRequestException("No se puede pagar una orden con pago rechazado o cancelado");
         }
 
-        pago.setMetodo(dto.getMetodo().trim());
-        pago.setReferenciaMaxima(dto.getReferenciaMaxima().trim());
+        pago.setMetodo(dto.getMetodo());
         pago.setEstado(EstadoPago.APROBADO);
         pago.setFechaPago(LocalDateTime.now());
         sincronizarEstadoOrden(pago.getOrden(), EstadoPago.APROBADO);
@@ -139,13 +130,8 @@ public class PagoService implements IPagoService {
 
         boolean hayCambios = false;
 
-        if (StringUtils.hasText(dto.getMetodo())) {
-            pago.setMetodo(dto.getMetodo().trim());
-            hayCambios = true;
-        }
-
-        if (StringUtils.hasText(dto.getReferenciaMaxima())) {
-            pago.setReferenciaMaxima(dto.getReferenciaMaxima().trim());
+        if (dto.getMetodo() != null) {
+            pago.setMetodo(dto.getMetodo());
             hayCambios = true;
         }
 
@@ -173,10 +159,6 @@ public class PagoService implements IPagoService {
             return;
         }
         orden.setEstado(EstadoOrden.CONFIRMADA);
-    }
-
-    private String generarReferenciaMaxima(Long ordenId) {
-        return "ORD-" + ordenId + "-" + System.currentTimeMillis();
     }
 
     private void marcarProductosComoVendidos(Orden orden) {

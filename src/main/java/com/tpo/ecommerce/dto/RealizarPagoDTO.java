@@ -1,5 +1,6 @@
 package com.tpo.ecommerce.dto;
 
+import com.tpo.ecommerce.enums.MetodoPago;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RealizarPagoDTO {
-    private String metodo;
-    private String referenciaMaxima;
+    private MetodoPago metodo;
 }
