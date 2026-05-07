@@ -15,7 +15,6 @@ public class MapperPago {
                 pago.getMetodo(),
                 pago.getEstado(),
                 pago.getMonto(),
-                pago.getReferenciaMaxima(),
                 pago.getFechaPago()
         );
     }

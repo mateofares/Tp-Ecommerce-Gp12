@@ -53,15 +53,14 @@ public class ReseniaService implements IReseniaService {
         )) {
             throw new BadRequestException("El comprador no compro ese producto en la orden indicada");
         }
-        if (reseniaRepository.existsByOrdenIdAndCompradorIdAndProductoId(
-                dto.getOrdenId(),
+        if (reseniaRepository.existsByCompradorIdAndProductoId( //validar que no ponga resenia 2 veces
                 dto.getCompradorId(),
                 dto.getProductoId()
         )) {
             throw new DuplicateResourceException(
                     "Resenia",
-                    "ordenId+compradorId+productoId",
-                    dto.getOrdenId() + "-" + dto.getCompradorId() + "-" + dto.getProductoId()
+                    "compradorId+productoId",
+                    dto.getCompradorId() + "-" + dto.getProductoId()
             );
         }
 

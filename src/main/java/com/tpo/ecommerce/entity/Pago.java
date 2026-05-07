@@ -1,6 +1,7 @@
 package com.tpo.ecommerce.entity;
 
 import com.tpo.ecommerce.enums.EstadoPago;
+import com.tpo.ecommerce.enums.MetodoPago;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,8 +27,9 @@ public class Pago {
     @JoinColumn(name = "orden_id", nullable = false, unique = true)
     private Orden orden;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "metodo")
-    private String metodo;
+    private MetodoPago metodo;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado")
@@ -35,9 +37,6 @@ public class Pago {
 
     @Column(name = "monto")
     private Double monto;
-
-    @Column(name = "referencia_maxima")
-    private String referenciaMaxima;
 
     @Column(name = "fecha_pago")
     private LocalDateTime fechaPago;

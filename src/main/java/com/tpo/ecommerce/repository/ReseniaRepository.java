@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface ReseniaRepository extends JpaRepository<Resenia, Long> {
-    boolean existsByOrdenIdAndCompradorIdAndProductoId(Long ordenId, Long compradorId, Long productoId);
+    boolean existsByCompradorIdAndProductoId(Long compradorId, Long productoId);
     List<Resenia> findByProductoIdOrderByFechaDesc(Long productoId);
 }
