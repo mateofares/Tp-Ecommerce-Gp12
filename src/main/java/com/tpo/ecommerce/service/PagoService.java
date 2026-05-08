@@ -53,6 +53,7 @@ public class PagoService implements IPagoService {
         pago.setEstado(EstadoPago.PENDIENTE);
         pago.setMonto(orden.getTotal());
         pago.setFechaPago(LocalDateTime.now());
+        pago.setMetodo(null);
 
         Pago pagoGuardado = pagoRepository.save(pago);
         generarFacturaSiCorresponde(pagoGuardado);
