@@ -13,6 +13,7 @@ import com.tpo.ecommerce.exceptions.BadRequestException;
 import org.springframework.stereotype.Service;
 import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -22,6 +23,13 @@ public class EnvioService implements IEnvioService {
     private final OrdenRepository ordenRepository;
     private final MapperEnvio mapperEnvio;
     
+    @Override
+    public List<EnvioDTO> getAllEnvios() {
+        return envioRepository.findAll().stream()
+                .map(mapperEnvio::toDto)
+                .toList();
+    }
+
     @Override
     public EnvioDTO crearEnvio(Long ordenId, String transportista, String numSeguimiento,
                                LocalDateTime fechaEstimada) {

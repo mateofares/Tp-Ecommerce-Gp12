@@ -1,6 +1,7 @@
 package com.tpo.ecommerce.controller;
 
 import com.tpo.ecommerce.config.AuthorizationHelper;
+import com.tpo.ecommerce.dto.AplicarDescuentoDTO;
 import com.tpo.ecommerce.dto.ProductoDTO;
 import com.tpo.ecommerce.entity.Producto;
 import com.tpo.ecommerce.enums.Categorias;
@@ -28,7 +29,7 @@ public class ProductoController {
 
     @PostMapping
     public ResponseEntity<ProductoDTO> crear(@RequestBody ProductoDTO dto) {
-        authorizationHelper.authorize(dto.getUsuarioId());
+        dto.setUsuarioId(authorizationHelper.getAuthenticatedUserId());
         return ResponseEntity.ok(productoService.crear(dto));
     }
 
@@ -81,21 +82,29 @@ public class ProductoController {
         ));
     }
 
+    @PatchMapping("/{productoId}/descuento")
+    public ResponseEntity<ProductoDTO> aplicarDescuentoPorPorcentaje(
+            @PathVariable Long productoId,
+            @RequestBody AplicarDescuentoDTO dto
+    ) {
+        Long vendedorId = authorizationHelper.getAuthenticatedUserId();
+        authorizationHelper.authorize(vendedorId);
+        return ResponseEntity.ok(productoService.aplicarDescuentoPorPorcentaje(productoId, dto.getPorcentaje(), vendedorId));
+    }
+
     @PatchMapping("/{productoId}/descuento/{descuentoId}")
     public ResponseEntity<ProductoDTO> aplicarDescuento(
             @PathVariable Long productoId,
-            @PathVariable Long descuentoId,
-            @RequestParam Long vendedorId
+            @PathVariable Long descuentoId
     ) {
+        Long vendedorId = authorizationHelper.getAuthenticatedUserId();
         authorizationHelper.authorize(vendedorId);
         return ResponseEntity.ok(productoService.aplicarDescuento(productoId, descuentoId, vendedorId));
     }
 
     @DeleteMapping("/{productoId}/descuento")
-    public ResponseEntity<ProductoDTO> removerDescuento(
-            @PathVariable Long productoId,
-            @RequestParam Long vendedorId
-    ) {
+    public ResponseEntity<ProductoDTO> removerDescuento(@PathVariable Long productoId) {
+        Long vendedorId = authorizationHelper.getAuthenticatedUserId();
         authorizationHelper.authorize(vendedorId);
         return ResponseEntity.ok(productoService.removerDescuento(productoId, vendedorId));
     }

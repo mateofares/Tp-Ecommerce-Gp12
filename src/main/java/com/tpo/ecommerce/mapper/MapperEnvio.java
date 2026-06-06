@@ -10,8 +10,8 @@ public class MapperEnvio {
     
     public EnvioDTO toDto(Envio envio) {
         if (envio == null) return null;
-        
-        return new EnvioDTO(
+
+        EnvioDTO dto = new EnvioDTO(
             envio.getId(),
             envio.getOrden() != null ? envio.getOrden().getId() : null,
             envio.getTransportista(),
@@ -20,6 +20,19 @@ public class MapperEnvio {
             envio.getEstado(),
             envio.getFechaEntrega()
         );
+
+        if (envio.getOrden() != null) {
+            var comprador = envio.getOrden().getComprador();
+            if (comprador != null) {
+                dto.setCliente(comprador.getNombre() + " " + comprador.getApellido());
+            }
+            var dir = envio.getOrden().getDireccion();
+            if (dir != null) {
+                dto.setDireccion(dir.getCalle() + " " + dir.getNumero() + ", " + dir.getCiudad());
+            }
+        }
+
+        return dto;
     }
     
     

@@ -1,11 +1,7 @@
 package com.tpo.ecommerce.controller;
 
-import com.tpo.ecommerce.config.AuthorizationHelper;
 import com.tpo.ecommerce.dto.EnvioDTO;
-import com.tpo.ecommerce.entity.Envio;
-import com.tpo.ecommerce.entity.Orden;
 import com.tpo.ecommerce.enums.EstadoEnvio;
-import com.tpo.ecommerce.exceptions.NotFoundException;
 import com.tpo.ecommerce.repository.EnvioRepository;
 import com.tpo.ecommerce.repository.OrdenRepository;
 import com.tpo.ecommerce.service.IEnvioService;
@@ -13,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/envios")
@@ -22,6 +19,11 @@ public class EnvioController {
     private final IEnvioService envioService;
     private final EnvioRepository envioRepository;
     private final OrdenRepository ordenRepository;
+
+    @GetMapping
+    public ResponseEntity<List<EnvioDTO>> getAllEnvios() {
+        return ResponseEntity.ok(envioService.getAllEnvios());
+    }
 
     // Solo el vendedor de la orden (o admin) puede crear el envío
     @PostMapping
@@ -67,20 +69,8 @@ public class EnvioController {
 
     // Solo el vendedor (o admin) puede registrar la entrega
     @PatchMapping("/{id}/entregar")
-    public ResponseEntity<EnvioDTO> registrarEntrega(
-            @PathVariable Long id,
-            @RequestParam LocalDateTime fechaEntrega) {
-        EnvioDTO envioEntregado = envioService.registrarEntrega(id, fechaEntrega);
+    public ResponseEntity<EnvioDTO> registrarEntrega(@PathVariable Long id) {
+        EnvioDTO envioEntregado = envioService.registrarEntrega(id, LocalDateTime.now());
         return ResponseEntity.ok(envioEntregado);
-    }
-
-    private Orden getOrden(Long ordenId) {
-        return ordenRepository.findById(ordenId)
-                .orElseThrow(() -> new NotFoundException("Orden no encontrada"));
-    }
-
-    private Envio getEnvio(Long envioId) {
-        return envioRepository.findById(envioId)
-                .orElseThrow(() -> new NotFoundException("Envío no encontrado"));
     }
 }
