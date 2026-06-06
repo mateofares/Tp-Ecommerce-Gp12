@@ -10,6 +10,7 @@ import com.tpo.ecommerce.enums.EstadoRegistro;
 import com.tpo.ecommerce.enums.Marca;
 import com.tpo.ecommerce.enums.Talle;
 import com.tpo.ecommerce.entity.Descuento;
+import com.tpo.ecommerce.enums.TipoDescuento;
 import com.tpo.ecommerce.exceptions.BadRequestException;
 import com.tpo.ecommerce.exceptions.NotFoundException;
 import com.tpo.ecommerce.exceptions.UnauthorizedException;
@@ -130,6 +131,31 @@ public class ProductoService implements IProductoService {
         if (hoy.isBefore(descuento.getValidoDesde()) || hoy.isAfter(descuento.getValidoHasta())) {
             throw new BadRequestException("El descuento no está vigente");
         }
+
+        producto.setDescuento(descuento);
+        return mapperProducto.toDto(productoRepository.save(producto));
+    }
+
+    @Override
+    @Transactional
+    public ProductoDTO aplicarDescuentoPorPorcentaje(Long productoId, Double porcentaje, Long vendedorId) {
+        if (porcentaje == null || porcentaje <= 0 || porcentaje >= 100) {
+            throw new BadRequestException("El porcentaje debe estar entre 1 y 99");
+        }
+
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new NotFoundException("Producto no encontrado"));
+        if (!estaActivo(producto)) {
+            throw new NotFoundException("Producto no encontrado");
+        }
+        if (producto.getUsuario() == null || !producto.getUsuario().getId().equals(vendedorId)) {
+            throw new UnauthorizedException("Solo el vendedor del producto puede aplicar un descuento");
+        }
+
+        String codigo = "PROD-" + productoId + "-" + System.currentTimeMillis();
+        LocalDate hoy = LocalDate.now();
+        Descuento descuento = new Descuento(codigo, TipoDescuento.PORCENTAJE, porcentaje, hoy, hoy.plusYears(1));
+        descuento = descuentoRepository.save(descuento);
 
         producto.setDescuento(descuento);
         return mapperProducto.toDto(productoRepository.save(producto));

@@ -22,20 +22,18 @@ public class OrdenController {
 
     @PostMapping
     public OrdenDTO comprar(@RequestBody OrdenDTO dto) {
-        authorizationHelper.authorize(dto.getCompradorId());
+        dto.setCompradorId(authorizationHelper.getAuthenticatedUserId());
         return ordenService.comprar(dto);
     }
 
-    @GetMapping("/{compradorId}")
-    public List<OrdenDTO> misCompras(@PathVariable Long compradorId) {
-        authorizationHelper.authorize(compradorId);
-        return ordenService.misCompras(compradorId);
+    @GetMapping("/mis-compras")
+    public List<OrdenDTO> misCompras() {
+        return ordenService.misCompras(authorizationHelper.getAuthenticatedUserId());
     }
 
-    @GetMapping("/ventas/{vendedorId}")
-    public List<OrdenDTO> misVentas(@PathVariable Long vendedorId) {
-        authorizationHelper.authorize(vendedorId);
-        return ordenService.misVentas(vendedorId);
+    @GetMapping("/mis-ventas")
+    public List<OrdenDTO> misVentas() {
+        return ordenService.misVentas(authorizationHelper.getAuthenticatedUserId());
     }
 
     @PostMapping("/{ordenId}/descuento/{descuentoId}")

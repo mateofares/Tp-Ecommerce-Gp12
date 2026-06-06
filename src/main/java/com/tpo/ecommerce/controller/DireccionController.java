@@ -24,7 +24,7 @@ public class DireccionController {
 
     @PostMapping
     public ResponseEntity<DireccionDTO> crear(@RequestBody DireccionDTO dto) {
-        authorizationHelper.authorize(dto.getUsuarioId());
+        dto.setUsuarioId(authorizationHelper.getAuthenticatedUserId());
         DireccionDTO result = direccionService.crear(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
@@ -37,15 +37,15 @@ public class DireccionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<DireccionDTO>> obtenerPorUsuario(@RequestParam Long usuarioId) {
-        authorizationHelper.authorize(usuarioId);
+    public ResponseEntity<List<DireccionDTO>> obtenerPorUsuario() {
+        Long usuarioId = authorizationHelper.getAuthenticatedUserId();
         List<DireccionDTO> result = direccionService.obtenerPorUsuario(usuarioId);
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/activas")
-    public ResponseEntity<List<DireccionDTO>> obtenerActivas(@RequestParam Long usuarioId) {
-        authorizationHelper.authorize(usuarioId);
+    public ResponseEntity<List<DireccionDTO>> obtenerActivas() {
+        Long usuarioId = authorizationHelper.getAuthenticatedUserId();
         List<DireccionDTO> result = direccionService.obtenerActivas(usuarioId);
         return ResponseEntity.ok(result);
     }
@@ -79,14 +79,12 @@ public class DireccionController {
     }
 
     @GetMapping("/predeterminada")
-    public ResponseEntity<DireccionDTO> obtenerPredeterminada(@RequestParam Long usuarioId) {
-        authorizationHelper.authorize(usuarioId);
+    public ResponseEntity<DireccionDTO> obtenerPredeterminada() {
+        Long usuarioId = authorizationHelper.getAuthenticatedUserId();
         DireccionDTO result = direccionService.obtenerPredeterminada(usuarioId);
-
         if (result == null) {
             return ResponseEntity.noContent().build();
         }
-
         return ResponseEntity.ok(result);
     }
 

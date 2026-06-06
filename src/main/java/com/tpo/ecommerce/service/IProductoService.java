@@ -21,5 +21,6 @@ public interface IProductoService {
     void deleteProducto(Long id);
     void eliminarLogico(Long id);
     ProductoDTO aplicarDescuento(Long productoId, Long descuentoId, Long vendedorId);
+    ProductoDTO aplicarDescuentoPorPorcentaje(Long productoId, Double porcentaje, Long vendedorId);
     ProductoDTO removerDescuento(Long productoId, Long vendedorId);
 }

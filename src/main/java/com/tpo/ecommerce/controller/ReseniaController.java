@@ -1,5 +1,6 @@
 package com.tpo.ecommerce.controller;
 
+import com.tpo.ecommerce.config.AuthorizationHelper;
 import com.tpo.ecommerce.dto.ReseniaDTO;
 import com.tpo.ecommerce.service.IReseniaService;
 import lombok.AllArgsConstructor;
@@ -14,9 +15,11 @@ import java.util.List;
 public class ReseniaController {
 
     private final IReseniaService reseniaService;
+    private final AuthorizationHelper authorizationHelper;
 
     @PostMapping
     public ResponseEntity<ReseniaDTO> crear(@RequestBody ReseniaDTO dto) {
+        dto.setCompradorId(authorizationHelper.getAuthenticatedUserId());
         return ResponseEntity.ok(reseniaService.crear(dto));
     }
 
