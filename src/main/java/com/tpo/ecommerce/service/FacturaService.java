@@ -90,6 +90,14 @@ public class FacturaService implements IFacturaService {
     }
 
     @Override
+    public List<FacturaDTO> listarTodas() {
+        return facturaRepository.findAll()
+                .stream()
+                .map(mapperFactura::toDto)
+                .toList();
+    }
+
+    @Override
     public FacturaDTO obtenerPorOrden(Long ordenId) {
         if (!ordenRepository.existsById(ordenId)) {
             throw new NotFoundException("Orden no encontrada con id: " + ordenId);

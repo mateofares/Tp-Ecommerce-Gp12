@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/facturas")
 @AllArgsConstructor
@@ -18,6 +20,12 @@ public class FacturaController {
     private final IFacturaService facturaService;
     private final FacturaRepository facturaRepository;
     private final AuthorizationHelper authorizationHelper;
+
+    @GetMapping
+    public ResponseEntity<List<FacturaDTO>> listarTodas() {
+        authorizationHelper.requireAdmin();
+        return ResponseEntity.ok(facturaService.listarTodas());
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<FacturaDTO> obtenerPorId(@PathVariable Long id) {
