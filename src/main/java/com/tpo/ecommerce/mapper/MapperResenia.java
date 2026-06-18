@@ -11,6 +11,10 @@ public class MapperResenia {
         if (resenia == null) {
             return null;
         }
+        String compradorNombre = resenia.getComprador() != null
+                ? resenia.getComprador().getNombre() + " " + resenia.getComprador().getApellido()
+                : null;
+        String productoTitulo = resenia.getProducto() != null ? resenia.getProducto().getTitulo() : null;
         return new ReseniaDTO(
                 resenia.getId(),
                 resenia.getProducto() != null ? resenia.getProducto().getId() : null,
@@ -20,7 +24,9 @@ public class MapperResenia {
                 resenia.getCalificacion(),
                 resenia.getComentarios(),
                 resenia.getFecha(),
-                resenia.getVerificado()
+                resenia.getVerificado(),
+                compradorNombre,
+                productoTitulo
         );
     }
 }

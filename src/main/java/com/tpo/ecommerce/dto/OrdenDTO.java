@@ -25,4 +25,5 @@ public class OrdenDTO {
     private LocalDateTime fecha;
     private String direccionResumen;
     private String metodoPago;
+    private String estadoEnvio;
 }

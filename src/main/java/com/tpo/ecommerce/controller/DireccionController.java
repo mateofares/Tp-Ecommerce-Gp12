@@ -43,13 +43,6 @@ public class DireccionController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/activas")
-    public ResponseEntity<List<DireccionDTO>> obtenerActivas() {
-        Long usuarioId = authorizationHelper.getAuthenticatedUserId();
-        List<DireccionDTO> result = direccionService.obtenerActivas(usuarioId);
-        return ResponseEntity.ok(result);
-    }
-
     @PatchMapping("/{id}")
     public ResponseEntity<DireccionDTO> actualizar(@PathVariable Long id, @RequestBody DireccionDTO dto) {
         authorizationHelper.authorize(getOwnerUserId(id));
@@ -64,27 +57,10 @@ public class DireccionController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{id}/eliminar-logico")
-    public ResponseEntity<Void> eliminarLogicoPatch(@PathVariable Long id) {
-        authorizationHelper.authorize(getOwnerUserId(id));
-        direccionService.eliminarLogico(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @PostMapping("/{id}/predeterminada")
     public ResponseEntity<DireccionDTO> establecerPredeterminada(@PathVariable Long id) {
         authorizationHelper.authorize(getOwnerUserId(id));
         DireccionDTO result = direccionService.establecerPredeterminada(id);
-        return ResponseEntity.ok(result);
-    }
-
-    @GetMapping("/predeterminada")
-    public ResponseEntity<DireccionDTO> obtenerPredeterminada() {
-        Long usuarioId = authorizationHelper.getAuthenticatedUserId();
-        DireccionDTO result = direccionService.obtenerPredeterminada(usuarioId);
-        if (result == null) {
-            return ResponseEntity.noContent().build();
-        }
         return ResponseEntity.ok(result);
     }
 

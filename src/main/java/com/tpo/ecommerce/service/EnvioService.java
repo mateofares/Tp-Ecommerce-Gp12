@@ -118,6 +118,17 @@ public class EnvioService implements IEnvioService {
     }
     
     @Override
+    public EnvioDTO generarEnvioAutomatico(Long ordenId) {
+        if (envioRepository.findByOrdenId(ordenId).isPresent()) {
+            return null;
+        }
+        Orden orden = ordenRepository.findById(ordenId)
+            .orElseThrow(() -> new NotFoundException("Orden no encontrada con id: " + ordenId));
+        Envio envio = new Envio(orden, "Sin asignar", "AUTO-" + ordenId, null);
+        return mapperEnvio.toDto(envioRepository.save(envio));
+    }
+
+    @Override
     public EnvioDTO registrarEntrega(Long id, LocalDateTime fechaEntrega) {
         
         

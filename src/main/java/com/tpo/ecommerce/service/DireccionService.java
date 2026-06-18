@@ -47,15 +47,7 @@ public class DireccionService implements IDireccionService {
                 .toList();
     }
 
-    @Override
-    public List<DireccionDTO> obtenerActivas(Long usuarioId) {
-        validarUsuarioExiste(usuarioId);
-        List<Direccion> direcciones = direccionRepository
-                .findByUsuarioIdAndActiva(usuarioId, true);
-        return direcciones.stream()
-                .map(mapperDireccion::toDto)
-                .toList();
-    }
+
 
     @Override
     public DireccionDTO actualizar(Long id, DireccionDTO dto) {
@@ -129,20 +121,6 @@ public class DireccionService implements IDireccionService {
 
         direccion.setPredeterminada(true);
         direccion = direccionRepository.save(direccion);
-
-        return mapperDireccion.toDto(direccion);
-    }
-
-    @Override
-    public DireccionDTO obtenerPredeterminada(Long usuarioId) {
-        validarUsuarioExiste(usuarioId);
-        Direccion direccion = direccionRepository
-                .findByUsuarioIdAndPredeterminada(usuarioId, true)
-                .orElse(null);
-
-        if (direccion == null) {
-            return null;
-        }
 
         return mapperDireccion.toDto(direccion);
     }

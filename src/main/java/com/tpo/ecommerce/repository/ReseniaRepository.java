@@ -10,4 +10,5 @@ import java.util.List;
 public interface ReseniaRepository extends JpaRepository<Resenia, Long> {
     boolean existsByCompradorIdAndProductoId(Long compradorId, Long productoId);
     List<Resenia> findByProductoIdOrderByFechaDesc(Long productoId);
+    List<Resenia> findByVendedorIdOrderByFechaDesc(Long vendedorId);
 }

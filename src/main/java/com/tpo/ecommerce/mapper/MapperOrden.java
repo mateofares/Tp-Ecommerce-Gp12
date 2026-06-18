@@ -6,6 +6,7 @@ import com.tpo.ecommerce.entity.Direccion;
 import com.tpo.ecommerce.entity.ItemOrden;
 import com.tpo.ecommerce.entity.Orden;
 import com.tpo.ecommerce.entity.Pago;
+import com.tpo.ecommerce.repository.EnvioRepository;
 import com.tpo.ecommerce.repository.PagoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import java.util.List;
 public class MapperOrden {
 
     private final PagoRepository pagoRepository;
+    private final EnvioRepository envioRepository;
 
     public OrdenDTO toDto(Orden orden) {
         List<ItemOrdenDTO> items = orden.getItems().stream()
@@ -50,6 +52,10 @@ public class MapperOrden {
 
         pagoRepository.findByOrdenId(orden.getId()).ifPresent(pago ->
                 dto.setMetodoPago(pago.getMetodo() != null ? pago.getMetodo().name() : null)
+        );
+
+        envioRepository.findByOrdenId(orden.getId()).ifPresent(envio ->
+                dto.setEstadoEnvio(envio.getEstado().name())
         );
 
         return dto;

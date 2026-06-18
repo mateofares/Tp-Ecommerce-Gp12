@@ -24,4 +24,5 @@ public interface OrdenRepository extends JpaRepository<Orden, Long> {
     boolean existsCompraDeProductoEnOrden(@Param("ordenId") Long ordenId,
                                           @Param("compradorId") Long compradorId,
                                           @Param("productoId") Long productoId);
+
 }

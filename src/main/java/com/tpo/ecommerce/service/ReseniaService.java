@@ -101,6 +101,20 @@ public class ReseniaService implements IReseniaService {
                 .toList();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<ReseniaDTO> getByVendedor(Long vendedorId) {
+        if (vendedorId == null) {
+            throw new BadRequestException("Debe indicar vendedorId");
+        }
+        if (!usuarioRepository.existsById(vendedorId)) {
+            throw new NotFoundException("Vendedor no encontrado");
+        }
+        return reseniaRepository.findByVendedorIdOrderByFechaDesc(vendedorId).stream()
+                .map(mapperResenia::toDto)
+                .toList();
+    }
+
     private void validarData(ReseniaDTO dto) {
         if (dto == null) {
             throw new BadRequestException("Debe enviar datos de la resenia");
