@@ -38,13 +38,20 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/authenticate").permitAll()
                         .requestMatchers(HttpMethod.GET, "/productos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/resenias/producto/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/envios/rastrear").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/descuentos/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/usuarios/**").hasAuthority("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.DELETE, "/usuarios/**").hasAuthority("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.PATCH, "/facturas/*/anular").hasAuthority("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/envios/**").hasAuthority("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PATCH, "/envios/**").hasAuthority("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/descuentos/**").hasAuthority("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PATCH, "/descuentos/**").hasAuthority("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.DELETE, "/descuentos/**").hasAuthority("ADMINISTRADOR")
 
                         .requestMatchers("/carrito/**").hasAuthority("USUARIO")
                         .requestMatchers(HttpMethod.POST, "/ordenes/**").hasAuthority("USUARIO")
