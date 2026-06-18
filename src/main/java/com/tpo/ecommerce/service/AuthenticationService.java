@@ -6,10 +6,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.tpo.ecommerce.config.JwtService;
 import com.tpo.ecommerce.dto.AuthenticationRequest;
 import com.tpo.ecommerce.dto.AuthenticationResponse;
 import com.tpo.ecommerce.dto.RegisterRequest;
+import com.tpo.ecommerce.dto.UsuarioResponseDTO;
 import com.tpo.ecommerce.entity.Usuario;
 import com.tpo.ecommerce.enums.EstadoRegistro;
 import com.tpo.ecommerce.exceptions.BadRequestException;
@@ -43,7 +47,7 @@ public class AuthenticationService {
 
         var savedUser = repository.save(user);
 
-        var jwtToken = jwtService.generateToken(savedUser);
+        var jwtToken = jwtService.generateToken(buildClaims(savedUser), savedUser);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .userId(savedUser.getId())
@@ -61,12 +65,30 @@ public class AuthenticationService {
         var user = repository.findByMail(request.getMail())
                 .filter(this::estaActivo)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
-        
-        var jwtToken = jwtService.generateToken(user);
+
+        var jwtToken = jwtService.generateToken(buildClaims(user), user);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .userId(user.getId())
                 .build();
+    }
+
+    public UsuarioResponseDTO me(Usuario usuario) {
+        return new UsuarioResponseDTO(
+                usuario.getId(),
+                usuario.getUserRol(),
+                usuario.getNombre(),
+                usuario.getMail(),
+                usuario.getApellido()
+        );
+    }
+
+    private Map<String, Object> buildClaims(Usuario user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId());
+        claims.put("rol", user.getUserRol().name());
+        claims.put("mail", user.getMail());
+        return claims;
     }
 
 

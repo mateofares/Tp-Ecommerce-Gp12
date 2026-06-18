@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -21,4 +22,8 @@ public class OrdenDTO {
     private double total;
     private Long descuentoId;
     private Double descuentoAplicado;
+    private LocalDateTime fecha;
+    private String direccionResumen;
+    private String metodoPago;
+    private String estadoEnvio;
 }

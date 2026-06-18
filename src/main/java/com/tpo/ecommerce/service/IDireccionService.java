@@ -11,13 +11,9 @@ public interface IDireccionService {
 
     List<DireccionDTO> obtenerPorUsuario(Long usuarioId);
 
-    List<DireccionDTO> obtenerActivas(Long usuarioId);
-
     DireccionDTO actualizar(Long id, DireccionDTO dto);
 
     void eliminarLogico(Long id);
 
     DireccionDTO establecerPredeterminada(Long id);
-
-    DireccionDTO obtenerPredeterminada(Long usuarioId);
 }

@@ -55,7 +55,8 @@ public class Producto {
     @Column(name = "estado")
     private Estado estado;
 
-    @Column(name = "imagen_url")
+    // Tipo TEXT para poder almacenar imagenes en base64 (data URL), no solo URLs cortas.
+    @Column(name = "imagen_url", columnDefinition = "TEXT")
     private String imagenUrl;
 
     @Enumerated(EnumType.STRING)

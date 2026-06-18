@@ -139,12 +139,6 @@ public class DescuentoService implements IDescuentoService {
     }
 
     @Override
-    public Double calcularDescuentoSinValidar(Double monto, Long descuentoId) {
-        Descuento descuento = obtenerDescuentoActivoPorId(descuentoId);
-        return aplicarCalculo(monto, descuento);
-    }
-
-    @Override
     public boolean validarDescuentoAplicable(Long descuentoId) {
         try {
             Descuento descuento = obtenerDescuentoActivoPorId(descuentoId);

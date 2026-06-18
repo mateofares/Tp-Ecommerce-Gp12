@@ -13,6 +13,5 @@ public interface IDescuentoService {
     DescuentoDTO getDescuentoPorCodigo(String codigoDescuento);
     Double calcularDescuento(Double monto, Long descuentoId);
     Double calcularPrecioFinal(Double monto, Long descuentoId);
-    Double calcularDescuentoSinValidar(Double monto, Long descuentoId);
     boolean validarDescuentoAplicable(Long descuentoId);
 }

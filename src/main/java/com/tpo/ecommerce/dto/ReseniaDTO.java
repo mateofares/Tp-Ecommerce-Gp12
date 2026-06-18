@@ -21,4 +21,6 @@ public class ReseniaDTO {
     private String comentarios;
     private LocalDateTime fecha;
     private Boolean verificado;
+    private String compradorNombre;
+    private String productoTitulo;
 }

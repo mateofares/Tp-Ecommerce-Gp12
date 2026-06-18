@@ -20,5 +20,7 @@ public interface IEnvioService {
     EnvioDTO actualizarEstado(Long id, EstadoEnvio nuevoEstado);
 
     EnvioDTO registrarEntrega(Long id, LocalDateTime fechaEntrega);
-    
+
+    EnvioDTO generarEnvioAutomatico(Long ordenId);
+
 }

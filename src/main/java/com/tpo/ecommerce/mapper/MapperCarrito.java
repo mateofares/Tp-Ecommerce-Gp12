@@ -19,7 +19,8 @@ public class MapperCarrito {
                         item.getId(),
                         item.getProducto().getId(),
                         item.getProducto().getTitulo(),
-                        item.getProducto().getPrecio()
+                        item.getProducto().getPrecio(),
+                        item.getProducto().getImagenUrl()
                 ))
                 .toList();
 

@@ -33,6 +33,7 @@ public class PagoService implements IPagoService {
     private final FacturaRepository facturaRepository;
     private final ProductoRepository productoRepository;
     private final IFacturaService facturaService;
+    private final IEnvioService envioService;
     private final MapperPago mapperPago;
 
     @Override
@@ -113,6 +114,7 @@ public class PagoService implements IPagoService {
 
         Pago pagoGuardado = pagoRepository.save(pago);
         generarFacturaSiCorresponde(pagoGuardado);
+        generarEnvioSiCorresponde(pagoGuardado);
         return mapperPago.toDto(pagoGuardado);
     }
 
@@ -179,5 +181,12 @@ public class PagoService implements IPagoService {
         if (facturaRepository.findByOrdenId(ordenId).isEmpty()) {
             facturaService.crearFacturaAutomatica(ordenId);
         }
+    }
+
+    private void generarEnvioSiCorresponde(Pago pago) {
+        if (pago.getEstado() != EstadoPago.APROBADO || pago.getOrden() == null || pago.getOrden().getId() == null) {
+            return;
+        }
+        envioService.generarEnvioAutomatico(pago.getOrden().getId());
     }
 }

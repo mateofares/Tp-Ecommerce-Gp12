@@ -27,4 +27,9 @@ public class ReseniaController {
     public ResponseEntity<List<ReseniaDTO>> getByProducto(@PathVariable Long productoId) {
         return ResponseEntity.ok(reseniaService.getByProducto(productoId));
     }
+
+    @GetMapping("/vendedor/{vendedorId}")
+    public ResponseEntity<List<ReseniaDTO>> getByVendedor(@PathVariable Long vendedorId) {
+        return ResponseEntity.ok(reseniaService.getByVendedor(vendedorId));
+    }
 }
