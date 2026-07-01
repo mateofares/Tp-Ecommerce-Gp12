@@ -2,6 +2,7 @@ package com.tpo.ecommerce.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.tpo.ecommerce.enums.UserRol;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +19,7 @@ public class AuthenticationResponse {
 
     @JsonProperty("user_id")
     private Long userId;
+
+    @JsonProperty("user_rol")
+    private UserRol userRol;
 }

@@ -7,7 +7,7 @@ public interface ICarritoService {
 
     CarritoDTO agregar(CarritoDTO dto);
 
-    CarritoDTO eliminar(CarritoDTO dto);
+    CarritoDTO eliminar(Long compradorId, Long itemId);
 
     CarritoDTO vaciar(CarritoDTO dto);
 

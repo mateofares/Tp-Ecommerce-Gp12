@@ -21,10 +21,10 @@ public class CarritoController {
         return carritoService.agregar(dto);
     }
 
-    @DeleteMapping("/eliminar")
-    public CarritoDTO eliminar(@RequestBody CarritoDTO dto) {
-        dto.setCompradorId(authorizationHelper.getAuthenticatedUserId());
-        return carritoService.eliminar(dto);
+    @DeleteMapping("/items/{itemId}")
+    public CarritoDTO eliminar(@PathVariable Long itemId) {
+        Long compradorId = authorizationHelper.getAuthenticatedUserId();
+        return carritoService.eliminar(compradorId, itemId);
     }
 
     @DeleteMapping("/vaciar")

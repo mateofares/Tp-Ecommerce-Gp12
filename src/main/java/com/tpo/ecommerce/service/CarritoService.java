@@ -79,20 +79,17 @@ public class CarritoService implements ICarritoService {
 
     @Override
     @Transactional
-    public CarritoDTO eliminar(CarritoDTO dto) {
-        validarRequestConItems(dto);
-        validarProductosUnicos(dto.getItems());
+    public CarritoDTO eliminar(Long compradorId, Long itemId) {
+        if (itemId == null) {
+            throw new BadRequestException("Debe indicar el itemId");
+        }
+        Carrito carrito = obtenerOCrearCarrito(compradorId);
 
-        Carrito carrito = obtenerOCrearCarrito(dto.getCompradorId());
+        boolean removido = carrito.getItems().removeIf(
+                item -> item.getId().equals(itemId));
 
-        for (ItemCarritoDTO itemDTO : dto.getItems()) {
-            if (itemDTO.getProductoId() == null) {
-                throw new BadRequestException("Cada item debe indicar productoId");
-            }
-            carrito.getItems().stream()
-                    .filter(item -> item.getProducto().getId().equals(itemDTO.getProductoId()))
-                    .findFirst()
-                    .ifPresent(carrito.getItems()::remove);
+        if (!removido) {
+            throw new NotFoundException("El item no está en el carrito");
         }
 
         return mapperCarrito.toDto(carritoRepository.save(carrito));
