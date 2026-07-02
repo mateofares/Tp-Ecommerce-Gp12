@@ -151,7 +151,8 @@ public class FacturaService implements IFacturaService {
                             item.getId(),
                             item.getProducto().getId(),
                             item.getProductoTitulo(),
-                            item.getPrecioUnitario()
+                            item.getPrecioUnitario(),
+                            item.getProducto().getImagenUrl()
                     ))
                     .toList();
 

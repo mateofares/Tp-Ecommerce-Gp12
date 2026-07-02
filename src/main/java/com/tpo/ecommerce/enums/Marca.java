@@ -6,5 +6,14 @@ public enum Marca {
     REEBOK,
     PUMA,
     CONVERSE,
-    
+    VANS,
+    NEW_BALANCE,
+    LACOSTE,
+    FILA,
+    CHAMPION,
+    CARHARTT,
+    STUSSY,
+    LEVIS,
+    TOMMY_HILFIGER,
+    OTRO
 }
