@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/ordenes")
-public class OrdenController {
+public class    OrdenController {
 
     private final IOrdenService ordenService;
     private final OrdenRepository ordenRepository;

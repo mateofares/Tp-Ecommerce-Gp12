@@ -110,10 +110,19 @@ public class EnvioService implements IEnvioService {
         }
         
         envio.setEstado(nuevoEstado);
-        
-        
+
+        Orden orden = envio.getOrden();
+        if (nuevoEstado == EstadoEnvio.EN_TRANSITO) {
+            orden.setEstado(EstadoOrden.ENVIADA);
+        } else if (nuevoEstado == EstadoEnvio.ENTREGADO) {
+            orden.setEstado(EstadoOrden.ENTREGADA);
+        } else if (nuevoEstado == EstadoEnvio.CANCELADO) {
+            orden.setEstado(EstadoOrden.CANCELADA);
+        }
+        ordenRepository.save(orden);
+
         Envio envioActualizado = envioRepository.save(envio);
-        
+
         return mapperEnvio.toDto(envioActualizado);
     }
     
@@ -147,7 +156,11 @@ public class EnvioService implements IEnvioService {
         
         envio.setEstado(EstadoEnvio.ENTREGADO);
         envio.setFechaEntrega(fechaEntrega);
-        
+
+        Orden orden = envio.getOrden();
+        orden.setEstado(EstadoOrden.ENTREGADA);
+        ordenRepository.save(orden);
+
         Envio envioEntregado = envioRepository.save(envio);
 
         return mapperEnvio.toDto(envioEntregado);

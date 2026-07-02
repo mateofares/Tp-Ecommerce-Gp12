@@ -6,5 +6,13 @@ public enum Color {
     AZUL,
     AMARILLO,
     NEGRO,
-    BLANCO
+    BLANCO,
+    GRIS,
+    MARRON,
+    NARANJA,
+    ROSA,
+    VIOLETA,
+    BEIGE,
+    CELESTE,
+    OTRO
 }

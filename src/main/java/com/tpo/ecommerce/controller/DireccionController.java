@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/direcciones")
 @AllArgsConstructor
-public class DireccionController {
+public class    DireccionController {
 
     private final IDireccionService direccionService;
     private final DireccionRepository direccionRepository;
